@@ -11,5 +11,5 @@ check the directories in ./score_ensemble/evaluation_backend.py and change them 
 
 # calling logic
 
-`python metric_test_ensemble.py --expe_name='my_exp' --variables=['u','v','t2m']
+`python metric_test_exec_ensemble.py --expe_name='my_exp' --variables=['u','v','t2m']
 
