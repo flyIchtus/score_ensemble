@@ -9,7 +9,7 @@ metrics computation configuration tools
 
 """
 import argparse
-from evaluation_backend_ens import var_dict
+from score_ensemble.evaluation_backend_ens import var_dict
 import os
 
 def str2list(li):
