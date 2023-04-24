@@ -15,8 +15,8 @@ CLASSIFIERS = [
 ]
 
 
-setup(name='metrics4ensemble',
-      description='Metrics for ensemble to ensemble evaluation',
+setup(name='score_ensemble',
+      description='Data processing code for',
       long_description=(open('README.rst').read()
                         if os.path.exists('README.rst')
                         else ''),
@@ -25,6 +25,6 @@ setup(name='metrics4ensemble',
       classifiers=CLASSIFIERS,
       author='Clement Brochet',
       author_email='clement.brochet@meteo.fr',
-      install_requires=['numpy', 'scipy', 'properscoring'],
+      install_requires=['numpy', 'pandas', 'metrics4ensemble'],
       tests_require=[],
       packages=find_packages())
