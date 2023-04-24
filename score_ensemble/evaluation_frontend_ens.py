@@ -18,8 +18,8 @@ from multiprocessing import Pool
 from collections import defaultdict
 
 
-from configurate_ens import Experiment
-import evaluation_backend_ens as backend
+from score_ensemble.configurate_ens import Experiment
+import score_ensemble.evaluation_backend_ens as backend
 import metrics4ensemble as metrics
 
 
