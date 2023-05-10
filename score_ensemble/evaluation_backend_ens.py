@@ -573,7 +573,7 @@ def global_dataset_eval(data):
        rdata = load_batch(dataset[0], n_samples,
                           var_indices_real = VI,
                           crop_indices = CI, option=data_option, subsample = real_sub)
-
+       print('real data loaded, shape ', rdata.shape)
     
     if data_option=='real':
         print('normalizing')

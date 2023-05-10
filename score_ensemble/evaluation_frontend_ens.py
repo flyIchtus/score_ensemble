@@ -157,7 +157,7 @@ class EnsembleMetricsCalculator(Experiment) :
             
             temp_log_dir = self.log_dir
             
-            self.log_dir = backend.data_dir
+            self.log_dir = backend.data_dir_real
         
         dumpfile = self.log_dir + self.add_name+name + str(N_samples_name)+'.p'
         
@@ -514,8 +514,8 @@ class EnsembleMetricsCalculator(Experiment) :
         if option=='real':
             
             
-            dataset_r = backend.build_datasets(data_dir_real, self.program)   
-            
+            dataset_r,_ = backend.build_datasets(data_dir_real, self.program, option = 'real')   
+            print(len(dataset_r))
             data_list = [(metrics_list, dataset_r, self.program[i][1], 
                           self.VI, self.VI, self.CI, i, option, subsample) \
                         for i, dataset in enumerate(dataset_r)]
