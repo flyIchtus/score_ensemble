@@ -18,6 +18,7 @@ import general_metrics as GM
 import quantiles_metric as quant
 import entropy as Entropy
 import CRPS as CRPS
+import skill_spread as sp
 import mean_bias as mb
 import metrics4ensemble.spectral_variance as spvar
 
@@ -129,7 +130,7 @@ class metric2D_ens():
 ##############################################################################
         ################## Metrics catalogue #####################
         
-standalone_metrics = {"spectral_dev","spectral_var","quantiles", "variance"}
+standalone_metrics = {"spectral_dev","spectral_var","quantiles", "variance", "skill_spread"}
 
 distance_metrics = {"quantile_score", "entropy", "ensemble_crps", "variance_diff", "mean_bias", "std_diff", "rel_std_diff"}
 
@@ -159,7 +160,8 @@ variance_diff = metric2D_ens('Variance map difference', GM.variance_diff,
 std_diff = metric2D_ens('Standard variation map difference', GM.std_diff, 
                              vars_wo_orog)
 
-
+skill_spread = metric2D_ens('skill spread',
+                        sp.skill_spread, vars_wo_orog)
 mean_bias = metric2D_ens('Average bias', mb.mean_bias, vars_wo_orog)
 
 rel_std_diff = metric2D_ens('Relative Std change', GM.relative_std_diff, vars_wo_orog)
