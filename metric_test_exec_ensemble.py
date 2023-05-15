@@ -12,10 +12,10 @@ import score_ensemble.evaluation_frontend_ens as frontend
 from score_ensemble.configurate_ens import getAndNameDirs, select_Config
 
 
-original_data_dir='/scratch/mrmn/brochetc/'
+original_data_dir='/scratch/mrmn/moldovang/'
 
 
-root_expe_path = '/scratch/mrmn/brochetc/GAN_2D/datasets_full_indexing/Database_latent/'
+root_expe_path = '/scratch/mrmn/moldovang/tests_CGAN/'
     
 if __name__=="__main__":
     
@@ -26,7 +26,7 @@ if __name__=="__main__":
     program = {i :(1,N_samples) for i in range(1)}   # program={i :(1,N_samples) for i in range(1)}
 
     distance_metrics_list = ["std_diff", "mean_bias","entropy"]
-    standalone_metrics_list = ["quantiles"]#, "variance"]
+    standalone_metrics_list = ["skill_spread"]#, "variance"]
     
     for ind in range(configuration_set.length):
         
@@ -34,7 +34,7 @@ if __name__=="__main__":
          
         try :
             
-            mC = frontend.EnsembleMetricsCalculator(expe_config, 'qtiles')
+            mC = frontend.EnsembleMetricsCalculator(expe_config, 's_p')
             
             mC.estimation(standalone_metrics_list, program, standalone=True, parallel=True, subsample=120)
            
