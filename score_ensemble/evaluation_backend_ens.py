@@ -66,6 +66,8 @@ def match_ensemble_to_samples(indices, df, data_dir, mode = 'Ens2Samples'):
 
             names = df[(df['DateIndex']==ind_i[0]) & (df['LeadTime']==ind_i[1])]['Name'].to_list()
             file_names.append([data_dir + n + '.npy' for n in names])
+            
+            
     
     if mode=='Sample2Ens' :
         ## give the names of each Ensembles corresponding to each sample if the list
@@ -153,6 +155,12 @@ def build_datasets(data_dir, program, df = df0, option='fake', indexList=None,
                 
             indices = [(i//8, i%8) for i in indexList]
             
+            if option == 'observation':
+                
+                fileList = [data_dir + 'obs_'+str(ind[0])+'_'+str(ind[1])+'.npy'
+                            
+                            for ind in indices ]
+            
             if option=='real' : ### we are going to gather individual samples
                 
                 fileList = match_ensemble_to_samples(indices, df, data_dir)
@@ -206,11 +214,11 @@ def build_datasets(data_dir, program, df = df0, option='fake', indexList=None,
                             for ind in indices ]
             
             res[key] = split_dataset(fileList,2)
-        
+    print(indexList)
     print('built datasets', option)
     print(res[key][0])
-    #print(res[key])
-
+    print(res[key])
+    
     return res, indexList
 
 
