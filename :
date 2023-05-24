@@ -26,7 +26,7 @@ if __name__=="__main__":
     program = {i :(1,N_samples) for i in range(1)}   # program={i :(1,N_samples) for i in range(1)}
 
     distance_metrics_list = ["quantiles"]#, "brier_score","entropy"]
-    standalone_metrics_list = ["quantiles"]#, "variance"]
+    standalone_metrics_list = ["skill_spread"]#, "variance"]
     
     for ind in range(configuration_set.length):
         
@@ -36,7 +36,7 @@ if __name__=="__main__":
             
             mC = frontend.EnsembleMetricsCalculator(expe_config, 'qtiles')
             
-            mC.estimation(standalone_metrics_list, program, standalone=True, parallel=True, subsample=16)
+            mC.estimation(standalone_metrics_list, program, standalone=True, parallel=True, subsample=120)
             #mC.estimation(distance_metrics_list, program, standalone=False, parallel=False,
                           #observation = True, subsample=16)
            

@@ -29,6 +29,7 @@ import metrics4ensemble as metrics
 num_proc = backend.num_proc
 var_dict = backend.var_dict 
 data_dir_real = backend.data_dir_real
+data_dir_obs = backend.data_dir_obs
 
 #####################################
 
@@ -49,7 +50,7 @@ class EnsembleMetricsCalculator(Experiment) :
     
     
     def estimation(self, metrics_list, program, subsample=16, parallel=False, standalone=False,
-                   same=False, real=False) :
+                   same=False, real=False, observation = False) :
         
         """
         
@@ -146,6 +147,11 @@ class EnsembleMetricsCalculator(Experiment) :
                 
             else :
                 func = self.sequentialEstimation_realVSfake
+                
+            if observation :
+                
+                func = lambda m : self.Estimation_modelvsobs(m, 
+                                                                       subsample = subsample, option = option)
                 
         results = func(metrics_list)
             
@@ -256,6 +262,89 @@ class EnsembleMetricsCalculator(Experiment) :
             return res
         return RES
 
+
+    def Estimation_modelvsobs(self, metrics_list, subsample=16, option = 'real'):
+        
+        """
+        
+        makes a list of datasets with each item of self.steps
+        and use multiple processes to evaluate the metric in parallel on each
+        item.
+        
+        The metric must be a distance metric and the data should be real / fake
+        
+        Inputs : 
+            
+            metric : str, the metric to evaluate
+            
+            subsample : tuple or int the number of members to subsample
+                        either from both the same (int) of from (real, fake)
+            
+        Returns :
+            
+            res : ndarray, the results array (precise shape defined by the metric)
+        
+        """
+        
+        RES = {}
+        
+        for step in self.steps: # for the moment, not the point using step but this can come
+            
+            print('Step', step)
+            
+            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program)
+            
+            dataset_o, _ = backend.build_datasets(data_dir_obs, self.program,
+                                               option = 'observation',
+                                               indexList = indexList) # taking the 'same ensemble' for fake and real
+            
+            data_list = []
+            
+            for i0 in self.program.keys():
+                
+                data_o = dataset_o[i0]
+                
+                N_samples = self.program[i0][1]
+                
+                #getting files to analyze from fake dataset
+                data_f = dataset_f[i0]
+                
+              
+                data_list.append((metrics_list, {'obs': data_o,'fake': data_f},\
+                                  N_samples, N_samples,\
+                                  self.VI, self.VI_f, self.CI, i0, subsample))
+
+            with Pool(num_proc) as p :
+                res = p.map(backend.eval_distance_metrics, data_list)
+                    
+                
+            ## some cuisine to produce a rightly formatted dictionary
+            
+            ind_list=[]
+            d_res = defaultdict(list)
+            
+            for res_index in res :
+                index = res_index[1]
+                res0 = res_index[0]
+                for k, v in res0.items():                    
+                    d_res[k].append(v)
+                ind_list.append(index)
+            
+            for k in d_res.keys():
+                d_res[k]= [x for _,x in sorted(zip(ind_list, d_res[k]))]
+            
+            res = { k : np.concatenate([np.expand_dims(v[i], axis=0) \
+                                        for i in range(len(self.program.keys()))], axis=0).squeeze()
+                                        for k,v in d_res.items()}
+            RES[step] = res
+            
+        if step==0 :
+
+            return res
+        return RES
+
+        
+    
         
     
     def sequentialEstimation_realVSfake(self, metrics_list, subsample=16):

@@ -9,6 +9,7 @@ Created on Thu Mar  3 10:54:05 2022
 """
 import numpy as np
 import metrics4ensemble as metrics
+import score_ensemble.useful_funcs as oc
 import random
 import pandas as pd
 
@@ -20,6 +21,8 @@ var_dict = {'rr': 0, 'u': 1, 'v': 2, 't2m': 3, 'orog': 4} # do not touch unless
                                                           # you know what u are doing
 
 data_dir_real = '/scratch/mrmn/brochetc/GAN_2D/datasets_full_indexing/IS_1_1.0_0_0_0_0_0_256_done/'
+
+data_dir_obs = '/scratch/mrmn/moldovang/obs_SE_reduced/sub_database/'
 
 df0 = pd.read_csv(data_dir_real + 'selected_inversion_dates_labels.csv')
 
@@ -217,7 +220,7 @@ def build_datasets(data_dir, program, df = df0, option='fake', indexList=None,
     print(indexList)
     print('built datasets', option)
     print(res[key][0])
-    print(res[key])
+    #print(res[key])
     
     return res, indexList
 
@@ -382,6 +385,31 @@ def load_batch(file_list, number,\
                     Mat[i,j] = np.load(file_list[i][j])[var_indices_real,
                                            crop_indices[0]:crop_indices[1],
                                            crop_indices[2]:crop_indices[3]].astype(np.float32)
+    elif option=='obs':
+        
+        # in this case samples are stored once per file
+        
+        Shape=(len(var_indices_real),
+               crop_indices[1]-crop_indices[0],
+               crop_indices[3]-crop_indices[2])
+        
+        Mat = np.zeros((number, Shape[0], Shape[1], Shape[2]), dtype=np.float32)
+        
+        
+        k = 0
+        
+        
+        for k in range(number):
+            
+            D_index = k//8
+            LT_index = k%8
+            obs = np.load(data_dir_obs+"obs_" + str(D_index) + "_" +str(LT_index) + ".npy")
+            obs = oc.obs_clean(obs)
+            
+            Mat[k] = obs
+    
+
+
                 
 
     return Mat
@@ -437,6 +465,8 @@ def eval_distance_metrics(data):
         results : np.array containing the calculation of the metric
         
     """
+    
+    print(data)
     metrics_list, dataset, n_samples_0, n_samples_1, VI, VI_f, CI, index, subsample = data
     print('Subsample', subsample)
     ## loading and normalizing data
@@ -466,6 +496,26 @@ def eval_distance_metrics(data):
         
         
         real_data = normalize(real_data, 0.95, Means, Maxs)
+        
+        print(real_data.shape, fake_data.shape)
+        
+    if list(dataset.keys())==['obs','fake']:
+    
+        print('index',index)
+            
+        print('load fake')  
+        fake_data = load_batch(dataset['fake'], n_samples_1, 
+                               var_indices_fake = VI_f, option='fake',
+                               subsample = fake_sub)
+        
+        print('load obs')
+        fake_data = oc.denorm(fake_data, Maxs, Means, 0.95)
+        real_data = load_batch(dataset['obs'], n_samples_0, 
+                               var_indices_real = VI, var_indices_fake = VI_f, 
+                               crop_indices = CI, option = 'obs', subsample = real_sub)
+        
+        
+        #real_data = normalize(real_data, 0.95, Means, Maxs)
         
         print(real_data.shape, fake_data.shape)
         
