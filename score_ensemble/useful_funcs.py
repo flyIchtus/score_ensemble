@@ -18,7 +18,7 @@ import properscoring as ps
 
 ############################ General simple metrics ###########################
 
-def skill_spread(obs) :
+def obs_clean(obs) :
     
     
     """
@@ -89,19 +89,19 @@ def skill_spread(obs) :
         if (i == j): 
             sum_measurements = sum_measurements + obs_reduced[i, 2::]
             j=i+1
-            #print("observation before", obs_reduced[i, 2::], i)
+            print("observation before", obs_reduced[i, 2::], i)
             if i != len_obs_reduced - 1 : ## last element....
                 #print(i, j)
                 while (indices_obs[i,0] == indices_obs[j,0] and indices_obs[i,1] == indices_obs[j,1]):
                     sum_measurements = sum_measurements + obs_reduced[j, 2::]
                     #print(i, j, indices_obs[i], indices_obs[j])
                     
-                    #print("copy!!!!!",j, obs_reduced[j, 2::])
+                    print("copy!!!!!",j, obs_reduced[j, 2::])
                     j=j+1
                     #print(i, j, indices_obs[i], indices_obs[j])
                 
             observation = sum_measurements/(j-i)
-            #print("observations after", observation)
+            print("observations after", observation)
             sum_measurements = np.zeros((3))
             
             #print(observation)
@@ -114,7 +114,7 @@ def skill_spread(obs) :
     obs_r_clean = np.array(obs_r_clean, dtype = 'float32')    
     #print(np.unique(indices_obs, return_counts=True))       
     # for i in range(size):
-    print(obs_r_clean.shape)
+    #print(obs_r_clean.shape)
     """
     Creating the observation matrix with the same shape as the fake/real ensemble
     
@@ -130,12 +130,10 @@ def skill_spread(obs) :
     Ens_observation[Ens_observation>1000.] =np.nan ## filtering missing readings
     Ens_observation[1][Ens_observation[0]<2.] =np.nan ## filtering dd when ff<2m/s
     
-    for i in range(128):
-        for j in range(128):
-            
-            print(Ens_observation[0,i,j], Ens_observation[1,i,j], Ens_observation[2,i,j])
 
-    
     return Ens_observation
 
+def denorm(mat, Maxs, Means, scale):
+    mat = mat*(1./0.95)*Maxs+Means
 
+    return mat
