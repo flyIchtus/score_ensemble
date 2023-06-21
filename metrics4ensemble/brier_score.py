@@ -9,7 +9,8 @@ import properscoring as ps
 import numpy as np
 import wind_comp as wc
 import copy
-def brier_score(cond, X, T_brier, ff_brier):
+
+def brier_score(cond, X, parameters ):
     """
     
     Inputs :
@@ -20,56 +21,56 @@ def brier_score(cond, X, T_brier, ff_brier):
         
     Returns :
         
-        brier score  : C x H x W array containing the result
+        brier score  : N_brier x C x H x W array containing the result N_brier number of thresholds
     
     """
-    
-    
-    #cond = np.expand_dims(cond, axis = 0)
-    #print(np.nanmax(cond[2]), X[:,2].max())
     N, C, H, W  = X.shape
     
-    X[:,0], X[:,1] = wc.computeWindDir(X[:,0], X[:,1])
-    angle_dif = wc.angle_diff(X[:,1], cond[1])
-
-    #T_brier = 270.
-    #ff_brier = 2.
-
-    X_brier = np.zeros((C,N,H,W))
-    O_brier = np.zeros((C,H,W))
-    O_brier[:] = np.nan
+    N_brier = parameters.shape[1]
     
-    """
-    Converting forecasts and observation
-    """
-
-    X_brier[0, X[:,0] > ff_brier] = 1.0
-    X_brier[2, X[:,2] > T_brier] = 1.0
-
-    X_brier_prob = X_brier.sum(axis = 1) / N
-    O_brier[0, cond[0] > ff_brier] = 1
-    O_brier[2, cond[2] > T_brier] = 1
-
-    brier = ps.crps_ensemble(O_brier, X_brier_prob)
+    X_p = copy.deepcopy(X)
+    cond_p = copy.deepcopy(cond)    
+    X_p[:,0], X_p[:,1] = wc.computeWindDir(X_p[:,0], X_p[:,1])
+    angle_dif = wc.angle_diff(X_p[:,1], cond_p[1])
     
-    for i in range(H):
+    brier = np.zeros((N_brier,  C, H, W))
+    
+    
+    for i in range(parameters.shape[1]):    
+
+    
+        T_brier = parameters[1, i]
+        ff_brier = parameters[0, i]
+    
+        X_brier = np.zeros((C,N,H,W))
+        O_brier = np.zeros((C,H,W))
+        O_brier[:] = np.nan
         
-        for j in range(W):
-            
-            print(O_brier[0,i,j], X_brier_prob[0,i,j], brier[0,i,j], O_brier[2,i,j], X_brier_prob[2,i,j], brier[2,i,j])   
-
-    #for i in range(H):
+        """
+        Converting forecasts and observation
+        """
+    
+        X_brier[0, X_p[:,0] > ff_brier] = 1.0
+        X_brier[2, X_p[:,2] > T_brier] = 1.0
+    
+        X_brier_prob = X_brier.sum(axis = 1) / N
+        O_brier[0, cond[0] > ff_brier] = 1
+        O_brier[2, cond[2] > T_brier] = 1
+        O_brier[0, cond[0] < ff_brier] = 0
+        O_brier[2, cond[2] < T_brier] = 0
         
-        #for j in range(W):
+        brier[i] = ps.brier_score(O_brier, X_brier_prob)
+        #if (i == 1):
+            #for k in range(H):
+        
+                #for z in range(W):
             
-            #print(cond[1,i,j], X[0,1,i,j], angle_dif[0,i,j],)   
+                    #print(X[:,0,k,z].max(),cond[0,k,z], O_brier[0,k,z], X_brier_prob[0,k,z], brier[i,0,k,z])   
+                    #print(X[:,2,k,z].max(), cond[2,k,z], O_brier[2,k,z], X_brier_prob[2,k,z], brier[i,2,k,z])   
 
 
-
-    
-    
     #print("Mean CRPS Ens", np.nanmean(crps[2]), np.nanmean(crps[1]), np.nanmean(crps[0]))
     
         
         
-    return
+    return brier

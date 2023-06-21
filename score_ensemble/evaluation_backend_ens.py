@@ -467,7 +467,7 @@ def eval_distance_metrics(data):
     """
     
     print(data)
-    metrics_list, dataset, n_samples_0, n_samples_1, VI, VI_f, CI, index, subsample = data
+    metrics_list, dataset, n_samples_0, n_samples_1, VI, VI_f, CI, index, subsample, parameters = data
     print('Subsample', subsample)
     ## loading and normalizing data
     
@@ -559,9 +559,15 @@ def eval_distance_metrics(data):
     
         print(metric)
         
-        Metric = getattr(metrics, metric)
+        if metric == 'brier_score' or metric == 'rel_diagram' : 
+            Metric = getattr(metrics, metric)
     
-        results[metric] = Metric(real_data, fake_data, select = False) 
+            results[metric] = Metric(real_data, fake_data, parameters = parameters, select = False)
+            
+        else : 
+           Metric = getattr(metrics, metric)
+    
+           results[metric] = Metric(real_data, fake_data, select = False) 
     
     return results, index
 

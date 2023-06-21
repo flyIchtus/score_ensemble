@@ -50,7 +50,7 @@ class EnsembleMetricsCalculator(Experiment) :
     
     
     def estimation(self, metrics_list, program, subsample=16, parallel=False, standalone=False,
-                   same=False, real=False, observation = False) :
+                   same=False, real=False, observation = False, parameters = None) :
         
         """
         
@@ -111,6 +111,7 @@ class EnsembleMetricsCalculator(Experiment) :
         ########################
         
         self.program = program
+        self.parameters = parameters
         
         print('Subsample', subsample)
         
@@ -312,10 +313,12 @@ class EnsembleMetricsCalculator(Experiment) :
               
                 data_list.append((metrics_list, {'obs': data_o,'fake': data_f},\
                                   N_samples, N_samples,\
-                                  self.VI, self.VI_f, self.CI, i0, subsample))
+                                  self.VI, self.VI_f, self.CI, i0, subsample, self.parameters))
 
             with Pool(num_proc) as p :
                 res = p.map(backend.eval_distance_metrics, data_list)
+                #for k,i0 in enumerate(self.program.keys()):
+                    #res = backend.eval_distance_metrics(data_list[k])
                     
                 
             ## some cuisine to produce a rightly formatted dictionary

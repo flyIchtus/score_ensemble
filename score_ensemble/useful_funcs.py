@@ -89,19 +89,19 @@ def obs_clean(obs) :
         if (i == j): 
             sum_measurements = sum_measurements + obs_reduced[i, 2::]
             j=i+1
-            print("observation before", obs_reduced[i, 2::], i)
+            #print("observation before", obs_reduced[i, 2::], i)
             if i != len_obs_reduced - 1 : ## last element....
                 #print(i, j)
                 while (indices_obs[i,0] == indices_obs[j,0] and indices_obs[i,1] == indices_obs[j,1]):
                     sum_measurements = sum_measurements + obs_reduced[j, 2::]
                     #print(i, j, indices_obs[i], indices_obs[j])
                     
-                    print("copy!!!!!",j, obs_reduced[j, 2::])
+                    #print("copy!!!!!",j, obs_reduced[j, 2::])
                     j=j+1
                     #print(i, j, indices_obs[i], indices_obs[j])
                 
             observation = sum_measurements/(j-i)
-            print("observations after", observation)
+            #print("observations after", observation)
             sum_measurements = np.zeros((3))
             
             #print(observation)

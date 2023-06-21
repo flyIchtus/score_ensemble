@@ -104,7 +104,7 @@ def qq_plots(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
             plt.text(0.7, 0.1, zone[i],fontdict = font, transform=axs.transAxes)
             #plt.text(0.55, 0.6, "spam", size=50, rotation=-25.,ha="right", va="top",
             #         bbox=dict(boxstyle="square",ec=(1., 0.5, 0.5),fc=(1., 0.8, 0.8),))
-            
+
             fig.tight_layout()
             plt.savefig('QQ_plots'+str(i)+'_'+str(j)+'.png')
             #plt.savefig(output_dir+'Spectral_PSD_{}.png'.format(var_names[j]))

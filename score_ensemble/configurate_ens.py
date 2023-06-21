@@ -92,7 +92,8 @@ def getAndNameDirs(root_expe_path):
     parser.add_argument('--parameter_sets', type = str2tupleList, help = 'Set of numerical parameters (as tuples)', default = [])
     parser.add_argument('--instance_num', type = str2list, help = 'Instances of experiment to dig in', default = [])
     parser.add_argument('--variables', type = str2list, help = 'List of subset of variables to compute metrics on', default =[])
-    
+    parser.add_argument('--subsample', type = int, help = 'number of members in ensemble', default = 16)
+
     multi_config=parser.parse_args()
     
     names=[]
