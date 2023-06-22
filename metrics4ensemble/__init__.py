@@ -19,6 +19,10 @@ import quantiles_metric as quant
 import entropy as Entropy
 import brier_score as BS
 import CRPS as CRPS
+import skill_spread as SP
+import rel_diagram as RD
+import rank_histogram as RH
+import bias_ensemble as BE
 import mean_bias as mb
 import metrics4ensemble.spectral_variance as spvar
 
@@ -97,7 +101,7 @@ class metric2D_ens():
 
         reliq_kwargs ={ k :v for k,v in kwargs.items() if k!='select'}
         
-        if len(data) == 2:
+        if len(data) > 1:
             
             res = np.zeros((data[0].shape[0] + 2,) + self.end_shape).astype(np.float32)
             
@@ -132,7 +136,7 @@ class metric2D_ens():
         
 standalone_metrics = {"spectral_dev","spectral_var","quantiles", "variance"}
 
-distance_metrics = {"quantile_score", "entropy", "ensemble_crps", "brier_score",  "variance_diff", "mean_bias", "std_diff", "rel_std_diff"}
+distance_metrics = {"quantile_score", "entropy", "bias_ensemble", "ensemble_crps", "brier_score", "skill_spread", "rel_diagram", "rank_histogram",  "variance_diff", "mean_bias", "std_diff", "rel_std_diff"}
 
 
 ###################### Usable namespace #######################################
@@ -151,8 +155,14 @@ ensemble_crps = metric2D_ens('Average crps',
                              CRPS.ensemble_crps, vars_wo_orog)
 
 brier_score = metric2D_ens('Ensemble Brier Score',
-                             BS.brier_score, vars_wo_orog)
-
+                             BS.brier_score, vars_wo_orog, end_shape = (6, 3, 128, 128))
+skill_spread = metric2D_ens('Ensemble Brier Score',
+                             SP.skill_spread, vars_wo_orog, end_shape = (2, 3, 128, 128))
+rel_diagram = metric2D_ens('Reliability diagram',
+                             RD.rel_diag, vars_wo_orog, end_shape = (6, 2, 3, 128, 128))
+rank_histogram = metric2D_ens('Reliability diagram',
+                             RH.rank_histo, vars_wo_orog, end_shape = (3,121))
+bias_ensemble = metric2D_ens('Average bias', BE.bias_ens, vars_wo_orog)
 variance = metric2D_ens('Variance per variable',
                         GM.simple_variance, vars_wo_orog)
 

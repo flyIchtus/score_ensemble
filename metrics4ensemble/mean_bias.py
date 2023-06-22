@@ -26,9 +26,11 @@ def mean_bias(cond,X) :
     
     N0 = X.shape[0]
     
+    X_mean = X.mean(axis=0)
+    
     for x in X :
         
-        bias = bias + (x - cond).mean(axis = 0)
+        bias = bias + (x - X_mean).mean(axis = 0)
     
     return bias / N0
         
