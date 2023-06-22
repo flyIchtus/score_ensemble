@@ -499,7 +499,7 @@ def eval_distance_metrics(data):
         
         print(real_data.shape, fake_data.shape)
         
-    if list(dataset.keys())==['obs','fake']:
+    elif list(dataset.keys())==['obs','fake']:
     
         print('index',index)
             

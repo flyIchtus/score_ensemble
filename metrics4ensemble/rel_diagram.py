@@ -8,7 +8,6 @@ AROME-specific version of skill_spread
 import numpy as np
 import wind_comp as wc
 import copy
-from verification import probscores as probs
 
 
 def rel_diag(cond, X, parameters):
