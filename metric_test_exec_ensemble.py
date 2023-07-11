@@ -24,12 +24,12 @@ if __name__=="__main__":
     
     configuration_set=getAndNameDirs(root_expe_path)
     print(configuration_set)
-    N_samples = 10   
+    N_samples = 592   
     
     program = {i :(1,N_samples) for i in range(1)}   # program={i :(1,N_samples) for i in range(1)}
 
-    #distance_metrics_list = ['bias_ensemble','rank_histogram', 'skill_spread', 'brier_score', 'ensemble_crps']#, "brier_score","entropy"]
-    distance_metrics_list = ["entropy"]
+    distance_metrics_list = ['bias_ensemble','rank_histogram', 'skill_spread', 'brier_score', 'ensemble_crps']#, "brier_score","entropy"]
+    #distance_metrics_list = ["entropy"]
     standalone_metrics_list = ["quantiles"]#, "variance"]
     
     parameters = np.zeros((2,6))
@@ -46,16 +46,16 @@ if __name__=="__main__":
         try :
             
             
-            mC = frontend.EnsembleMetricsCalculator(expe_config, 'distance_metrics_ent')
+            mC = frontend.EnsembleMetricsCalculator(expe_config, 'distance_metrics')
             
             #mC.estimation(standalone_metrics_list, program, standalone=True, parallel=True, subsample=16)
             mC.estimation(distance_metrics_list, program, standalone=False, parallel=False,
-                          observation = False, subsample=sbsample, parameters = parameters)
+                          observation = True, subsample=sbsample, parameters = parameters)
             
-            #mC = frontend.EnsembleMetricsCalculator(expe_config, 'rel_diagram')
+            mC = frontend.EnsembleMetricsCalculator(expe_config, 'rel_diagram')
             
-            #mC.estimation(['rel_diagram'], program, standalone=False, parallel=False,
-            #              observation = True, subsample=sbsample, parameters = parameters)    
+            mC.estimation(['rel_diagram'], program, standalone=False, parallel=False,
+                          observation = True, subsample=sbsample, parameters = parameters)    
                           
             
            
