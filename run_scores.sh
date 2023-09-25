@@ -72,5 +72,27 @@
 
 #python3 metric_test_exec_ensemble.py  --expe_name='sm_2_4_10_12_W' --subsample 112 --variables=['u','v','t2m'] &> out2_3_10_12.txt &
 
-python3 metric_test_exec_ensemble.py  --expe_name='throughB_2_3_10_12_1000_0_0.1_0.001_1.0_50_30_10_freeNoise' --subsample 120 --variables=['u','v','t2m'] &> out1_1_10_12.txt &
-python3 metric_test_exec_ensemble.py  --expe_name='throughB_0_1_1_12_1000_0_0.1_0.001_1.0_50_30_10_freeNoise' --subsample 120 --variables=['u','v','t2m'] &> out2_3_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='throughB_2_3_10_12_1000_0_0.1_0.001_1.0_50_30_10_freeNoise' --subsample 120 --variables=['u','v','t2m'] &> out1_1_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='throughB_0_1_1_12_1000_0_0.1_0.001_1.0_50_30_10_freeNoise' --subsample 120 --variables=['u','v','t2m'] &> out2_3_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_2_3_10_12_W_300_iter_OPT_15' --subsample 112 --variables=['u','v','t2m'] &> out2_3_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_2_4_10_12_W_300_iter_OPT_15' --subsample 112 --variables=['u','v','t2m'] &> out2_4_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_2_3_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out2_4_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_2_4_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out2_4_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_0_1_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out0_1_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_1_2_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out1_2_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_2_3_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out2_3_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_3_4_10_12_W_1000_iter_OPT_1_debiased_seed' --subsample 112 --variables=['u','v','t2m'] &> out3_4_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_4_5_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out4_5_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_5_6_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out5_6_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_6_7_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out6_7_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_7_8_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out7_8_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_8_9_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out8_9_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_3_4_9_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out3_4_9_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_3_4_8_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out3_4_8_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_2_4_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out2_4_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_3_5_10_12_W_1000_iter_OPT_1_debiased' --subsample 112 --variables=['u','v','t2m'] &> out3_5_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_3_4_10_12_W_1000_iter_OPT_1_debiased_2' --subsample 112 --variables=['u','v','t2m'] &> out3_4_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_3_4_10_12_W_1000_iter_OPT_1_debiased_newobs_uvdeb' --subsample 112 --variables=['u','v','t2m'] &> out3_4_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='REAL_newobs' --subsample 16 --variables=['u','v','t2m'] &> REAL.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='sm_3_4_10_12_W_1000_iter_OPT_1_debiased_newobs_ffdeb' --subsample 112 --variables=['u','v','t2m'] &> out3_4_10_12.txt &
+python3 metric_test_exec_ensemble.py  --expe_name='INVERSION_200' --subsample 16 --variables=['u','v','t2m'] &> out3_4_10_12.txt &

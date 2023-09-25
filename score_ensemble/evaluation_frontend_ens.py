@@ -50,7 +50,7 @@ class EnsembleMetricsCalculator(Experiment) :
     
     
     def estimation(self, metrics_list, program, subsample=16, parallel=False, standalone=False,
-                   same=False, real=False, observation = False, parameters = None) :
+                   same=False, real=False, observation = False, parameters = None, N_runs=None, dh=None, debiasing = False) :
         
         """
         
@@ -112,6 +112,9 @@ class EnsembleMetricsCalculator(Experiment) :
         
         self.program = program
         self.parameters = parameters
+        self.N_runs = N_runs
+        self.dh = dh
+        self.debiasing = debiasing
         
         print('Subsample', subsample)
         
@@ -166,13 +169,19 @@ class EnsembleMetricsCalculator(Experiment) :
             
             self.log_dir = backend.data_dir_real
         
-        dumpfile = self.log_dir + self.add_name+name + str(N_samples_name)+'.p'
-        
+        #dumpfile = self.log_dir + self.add_name+name + str(N_samples_name)+'.p'
+        dumpfile = self.log_dir + self.add_name+name + str(N_samples_name)
         if real : 
             
             self.log_dir = temp_log_dir
 
-        pickle.dump(results, open(dumpfile, 'wb'))
+
+        for i in range(len(metrics_list)):
+            np.save(dumpfile+'_'+metrics_list[i] + '.npy', results[0][metrics_list[i]])  
+
+        #print(dumpfile, metrics_list, results)
+        #print(caca)
+        #pickle.dump(results, open(dumpfile, 'wb'))
         
         
     
@@ -232,7 +241,7 @@ class EnsembleMetricsCalculator(Experiment) :
               
                 data_list.append((metrics_list, {'real': data_r,'fake': data_f},\
                                   N_samples, N_samples,\
-                                  self.VI, self.VI_f, self.CI, i0, subsample, self.parameters))
+                                  self.VI, self.VI_f, self.CI, i0, subsample, self.parameters, self.N_runs, self.dh, self.debiasing))
 
             with Pool(num_proc) as p :
                 res = p.map(backend.eval_distance_metrics, data_list)
@@ -293,12 +302,14 @@ class EnsembleMetricsCalculator(Experiment) :
             
             print('Step', step)
             
-            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program)
+            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program, N_runs=self.N_runs, dh=self.dh)
             
             dataset_o, _ = backend.build_datasets(data_dir_obs, self.program,
                                                option = 'observation',
-                                               indexList = indexList) # taking the 'same ensemble' for fake and real
-            
+                                               indexList = indexList, N_runs=self.N_runs, dh=self.dh) # taking the 'same ensemble' for fake and real
+            dataset_r, _ = backend.build_datasets(data_dir_real, self.program,
+                                               option = 'real',
+                                               indexList = indexList, N_runs=self.N_runs, dh=self.dh) # taking the 'same ensemble' for fake and real
             data_list = []
             
             for i0 in self.program.keys():
@@ -309,36 +320,36 @@ class EnsembleMetricsCalculator(Experiment) :
                 
                 #getting files to analyze from fake dataset
                 data_f = dataset_f[i0]
+                data_r = dataset_r[i0]
                 
               
-                data_list.append((metrics_list, {'obs': data_o,'fake': data_f},\
+                data_list.append((metrics_list, {'obs': data_o,'fake': data_f,'real': data_r},\
                                   N_samples, N_samples,\
-                                  self.VI, self.VI_f, self.CI, i0, subsample, self.parameters))
-
-            with Pool(num_proc) as p :
-                res = p.map(backend.eval_distance_metrics, data_list)
-                #for k,i0 in enumerate(self.program.keys()):
-                    #res = backend.eval_distance_metrics(data_list[k])
-                    
+                                  self.VI, self.VI_f, self.CI, i0, subsample, self.parameters, self.N_runs, self.dh, self.debiasing))
+            #res = []
+            #with Pool(num_proc) as p :
+            #    res = p.map(backend.eval_distance_metrics, data_list)
+                for k,i0 in enumerate(self.program.keys()):
+                    res = backend.eval_distance_metrics(data_list[k])
+            #res.append(backend.eval_distance_metrics(data_list))
                 
             ## some cuisine to produce a rightly formatted dictionary
-            
             ind_list=[]
             d_res = defaultdict(list)
             
-            for res_index in res :
-                index = res_index[1]
-                res0 = res_index[0]
-                for k, v in res0.items():                    
-                    d_res[k].append(v)
-                ind_list.append(index)
+            #for res_index in res :
+            #    index = res_index[1]
+            #    res0 = res_index[0]
+            #    for k, v in res0.items():                    
+            #        d_res[k].append(v)
+            #    ind_list.append(index)
             
-            for k in d_res.keys():
-                d_res[k]= [x for _,x in sorted(zip(ind_list, d_res[k]))]
+            #for k in d_res.keys():
+            #    d_res[k]= [x for _,x in sorted(zip(ind_list, d_res[k]))]
             
-            res = { k : np.concatenate([np.expand_dims(v[i], axis=0) \
-                                        for i in range(len(self.program.keys()))], axis=0).squeeze()
-                                        for k,v in d_res.items()}
+            #res = { k : np.concatenate([np.expand_dims(v[i], axis=0) \
+            #                            for i in range(len(self.program.keys()))], axis=0).squeeze()
+            #                            for k,v in d_res.items()}
             RES[step] = res
             
         if step==0 :
@@ -399,7 +410,7 @@ class EnsembleMetricsCalculator(Experiment) :
                 
                 data = (metrics_list, {'real': data_r,'fake': data_f},\
                       N_samples, N_samples,
-                      self.VI, self.VI_f, self.CI, i0, subsample, self.parameters)
+                      self.VI, self.VI_f, self.CI, i0, subsample,  self.parameters, self.N_runs, self.dh, self.debiasing)
        
                 res.append(backend.eval_distance_metrics(data))
           
@@ -464,7 +475,7 @@ class EnsembleMetricsCalculator(Experiment) :
                 data_list.append((metric, 
                                   {'real0':datasets[i][0],'real1': datasets[i][1]},
                                   N_samples, N_samples,
-                                  self.VI, self.VI, self.CI, i, subsample, self.parameters))
+                                  self.VI, self.VI, self.CI, i, subsample,  self.parameters, self.N_runs, self.dh, self.debiasing))
             
             with Pool(num_proc) as p :
                 res = p.map(backend.eval_distance_metrics, data_list)

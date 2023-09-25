@@ -111,3 +111,14 @@ def computeWindDir(U,V, xRef=None, yRef=None, proj=None):
         dd3 -= devAng
 
     return ff, dd3
+
+def debiasing(X_p, real_ens_p):
+
+    N_a=int(X_p.shape[0]/real_ens_p.shape[0])
+    for i in range(int(real_ens_p.shape[0])):
+        
+        Gan_avg_mem = np.mean(X_p[i*N_a:(i+1)*N_a], axis = 0)
+        Bias = real_ens_p[i] - Gan_avg_mem
+        Bias[1] = 0.
+        X_p[i*N_a:(i+1)*N_a] = X_p[i*N_a:(i+1)*N_a] + Bias
+    return X_p 

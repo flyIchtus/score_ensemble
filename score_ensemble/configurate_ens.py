@@ -60,6 +60,7 @@ def retrieve_domain_parameters(path, instance_num):
     
     try :
         with open(path+'ReadMe_'+str(instance_num)+'.txt', 'r') as f :
+            
             li=f.readlines()
             for line in li:
                 if "crop_indexes" in line :
@@ -93,6 +94,7 @@ def getAndNameDirs(root_expe_path):
     parser.add_argument('--instance_num', type = str2list, help = 'Instances of experiment to dig in', default = [])
     parser.add_argument('--variables', type = str2list, help = 'List of subset of variables to compute metrics on', default =[])
     parser.add_argument('--subsample', type = int, help = 'number of members in ensemble', default = 16)
+    parser.add_argument('--debiasing', type = bool, help = 'debiasing or not', default = False)
 
     multi_config=parser.parse_args()
     
