@@ -18,7 +18,7 @@ import properscoring as ps
 
 ############################ General simple metrics ###########################
 
-def obs_clean(obs) :
+def obs_clean(obs, crop_indices) :
     
     
     """
@@ -44,11 +44,24 @@ def obs_clean(obs) :
     
     N_obs = obs.shape[0]
     
-    Lat_min = 42.44309623430962
-    Lon_min = 2.8617305976806424
-    Lat_max = 45.63863319386332
-    Lon_max = 6.058876003568244
-    size = 128
+    Lat_min_AROME=37.5
+    Lat_max_AROME=55.4
+    Lon_min_AROME=-12.0
+    Lon_max_AROME=16.0
+    n_lat_AROME=717
+    n_lon_AROME=1121
+    
+    size = crop_indices[1] - crop_indices[0]
+    
+    Lat_min=Lat_min_AROME+crop_indices[0]*(Lat_max_AROME-Lat_min_AROME)/n_lat_AROME
+    Lat_max=Lat_min_AROME+crop_indices[1]*(Lat_max_AROME-Lat_min_AROME)/n_lat_AROME
+    Lon_min=Lon_min_AROME+crop_indices[2]*(Lon_max_AROME-Lon_min_AROME)/n_lon_AROME
+    Lon_max=Lon_min_AROME+crop_indices[3]*(Lon_max_AROME-Lon_min_AROME)/n_lon_AROME
+    
+    #Lat_min = 42.44309623430962
+    #Lon_min = 2.8617305976806424
+    #Lat_max = 45.63863319386332
+    #Lon_max = 6.058876003568244
     
     dlat = (Lat_max - Lat_min)/size
     dlon = (Lon_max - Lon_min)/size
@@ -63,6 +76,7 @@ def obs_clean(obs) :
     
     Pixel to lat_lon equivalence
     """
+
     for i in range(N_obs):
         if (obs[i,0] > Lon_min and obs[i,0] < Lon_max) and (obs[i,1] > Lat_min and obs[i,1] < Lat_max):
             
@@ -70,7 +84,7 @@ def obs_clean(obs) :
             indice_lat = np.floor((obs[i,1]-Lat_min)/dlat)
             indices_obs.append([indice_lat, indice_lon])
             obs_reduced.append(obs[i])
-            
+    
     
     indices_obs = np.array(indices_obs, dtype = 'int')
     obs_reduced = np.array(obs_reduced, dtype = 'float32')
@@ -84,7 +98,6 @@ def obs_clean(obs) :
     indices_o_clean = []
     j = 0
     sum_measurements = np.zeros((3))
-    
     for i in range(len_obs_reduced):
         if (i == j): 
             sum_measurements = sum_measurements + obs_reduced[i, 2::]
@@ -92,7 +105,7 @@ def obs_clean(obs) :
             #print("observation before", obs_reduced[i, 2::], i)
             if i != len_obs_reduced - 1 : ## last element....
                 #print(i, j)
-                while (indices_obs[i,0] == indices_obs[j,0] and indices_obs[i,1] == indices_obs[j,1]):
+                while (j < len_obs_reduced) and (indices_obs[i,0] == indices_obs[j,0] and indices_obs[i,1] == indices_obs[j,1]): # final and in case the last element is a repetition
                     sum_measurements = sum_measurements + obs_reduced[j, 2::]
                     #print(i, j, indices_obs[i], indices_obs[j])
                     
@@ -119,8 +132,12 @@ def obs_clean(obs) :
     Creating the observation matrix with the same shape as the fake/real ensemble
     
     The strategy is to put NaN everywhere where observation is missing or where the observation is corrupted
+
+    This only works for 3 variables. For now I don't think its necessary to go further.
     """
-    Ens_observation = np.empty((3, 128, 128))
+    
+    
+    Ens_observation = np.empty((3, size, size))
     Ens_observation[:] = np.nan
     
     Ens_observation[0,indices_o_clean[:,0],indices_o_clean[:,1]] = obs_r_clean[:,2] #

@@ -20,7 +20,7 @@ def mean_absolute_bias(cond,X) :
     
     return bias / N0
 
-def mean_bias(cond,X) :
+def mean_bias(cond,X,real_ens) :
     
     bias = 0.0
     

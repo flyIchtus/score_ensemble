@@ -18,7 +18,7 @@ import general_metrics as GM
 import quantiles_metric as quant
 import entropy as Entropy
 import brier_score as BS
-import CRPS as CRPS
+import CRPS_calc as CRPS_calc
 import skill_spread as SP
 import rel_diagram as RD
 import rank_histogram as RH
@@ -35,12 +35,14 @@ var_dict_fake = {'u' : 0 , 'v' : 1, 't2m' : 2, 'orog' : 3}
 
 vars_wo_orog = ['u', 'v', 't2m']
 
+size = 256
+
 ######################
 
 ########################### High level APIs ##################################
 
 class metric2D_ens():
-    def __init__(self, long_name, func, variables, end_shape=(3,128,128), names = ['metric']):
+    def __init__(self, long_name, func, variables, end_shape=(3,size,size), names = ['metric']):
         
         self.long_name = long_name
         
@@ -106,7 +108,7 @@ class metric2D_ens():
             res = np.zeros((data[0].shape[0] + 2,) + self.end_shape).astype(np.float32)
             
             for i in range(data[0].shape[0]) :
-                res[i] = self.func(data[0][i], data[1][i],**reliq_kwargs)
+                res[i] = self.func(data[0][i], data[1][i], data[2][i],**reliq_kwargs)
             
             res[-2], res[-1] = res[:-2].mean(axis = 0), res[:-2].std(axis = 0)
             # adding the batch mean and std at the end of the vector
@@ -143,7 +145,7 @@ distance_metrics = {"quantile_score", "entropy", "bias_ensemble", "ensemble_crps
 
 
 quantiles = metric2D_ens('Multiple Quantiles', 
-                         quant.quantiles, vars_wo_orog, end_shape =(7,3,128,128) )
+                         quant.quantiles, vars_wo_orog, end_shape =(7,3,size,size) )
 
 quantile_score = metric2D_ens('Quantile RMSE', 
                               quant.quantile_score, vars_wo_orog)
@@ -152,14 +154,14 @@ entropy = metric2D_ens('Added ensemble entropy',
                        Entropy.ensemble_log_likelihood, vars_wo_orog)
 
 ensemble_crps = metric2D_ens('Average crps',
-                             CRPS.ensemble_crps, vars_wo_orog)
+                             CRPS_calc.ensemble_crps, vars_wo_orog, end_shape= (3,1))
 
 brier_score = metric2D_ens('Ensemble Brier Score',
-                             BS.brier_score, vars_wo_orog, end_shape = (6, 3, 128, 128))
+                             BS.brier_score, vars_wo_orog, end_shape = (6, 3, size, size))
 skill_spread = metric2D_ens('Ensemble Brier Score',
-                             SP.skill_spread, vars_wo_orog, end_shape = (2, 3, 128, 128))
+                             SP.skill_spread, vars_wo_orog, end_shape = (2, 3, size, size))
 rel_diagram = metric2D_ens('Reliability diagram',
-                             RD.rel_diag, vars_wo_orog, end_shape = (6, 2, 3, 128, 128))
+                             RD.rel_diag, vars_wo_orog, end_shape = (6, 2, 3, size, size))
 rank_histogram = metric2D_ens('Reliability diagram',
                              RH.rank_histo, vars_wo_orog, end_shape = (3,121))
 bias_ensemble = metric2D_ens('Average bias', BE.bias_ens, vars_wo_orog)

@@ -64,7 +64,7 @@ def plot_mean_var_1l(Ens_proj_var, ref, name):
     plt.savefig(name + ".jpg",  dpi=600, transparent=False, bbox_inches='tight')
 
 
-def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
+def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     
     Means = np.load('/scratch/mrmn/moldovang/IS_1_1.0_0_0_0_0_0_256_done/mean_with_orog.npy')[1:4].reshape(3,1,1)
     Maxs = np.load('/scratch/mrmn/moldovang/IS_1_1.0_0_0_0_0_0_256_done/max_with_orog.npy')[1:4].reshape(3,1,1)
@@ -111,25 +111,25 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
         'size': 25,
         }
     len_tests = len(tests_list)
-    name_res = '/log/distance_metrics_distance_metrics_592.p'
+    name_res = '/log/distance_metrics_distance_metrics_300.p'
 
     name_res_rd = '/log/rel_diagram_distance_metrics_592.p'
     N_bins_max = 121
     
     Brier_scores = np.zeros((len_tests, N_e, 6, n_c, size_x, size_x), dtype = ('float32'))
-    Brier_scores_LT = np.zeros((len_tests, 74, 8, 6, n_c, size_x, size_x), dtype = ('float32'))
+    Brier_scores_LT = np.zeros((len_tests, n_D, n_LT, 6, n_c, size_x, size_x), dtype = ('float32'))
     
     s_p_scores = np.zeros((len_tests, N_e, 2, n_c, size_x, size_x), dtype = ('float32'))
-    s_p_scores_LT = np.zeros((len_tests, 74, 8, 2, n_c, size_x, size_x), dtype = ('float32'))
+    s_p_scores_LT = np.zeros((len_tests, n_D, n_LT, 2, n_c, size_x, size_x), dtype = ('float32'))
     
     #crps_scores = np.zeros((len_tests, N_e, n_c, size_x, size_x), dtype = ('float32'))
     #crps_scores_LT = np.zeros((len_tests, 74, 8, n_c, size_x, size_x), dtype = ('float32'))
     
     crps_scores = np.zeros((len_tests, N_e, n_c), dtype = ('float32'))
-    crps_scores_LT = np.zeros((len_tests, 74, 8, n_c), dtype = ('float32'))
+    crps_scores_LT = np.zeros((len_tests, n_D, n_LT, n_c), dtype = ('float32'))
     
     mean_bias = np.zeros((len_tests, N_e, n_c, size_x, size_x), dtype = ('float32'))
-    mean_bias_LT = np.zeros((len_tests, 74, 8, n_c, size_x, size_x), dtype = ('float32'))
+    mean_bias_LT = np.zeros((len_tests, n_D, n_LT, n_c, size_x, size_x), dtype = ('float32'))
     
     bins = np.linspace(0, 1, num=11)
     freq_obs = np.zeros((10))
@@ -139,10 +139,13 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
     A_ROC = np.zeros((len_tests))
     A_ROC_skill = np.zeros((len_tests))
     
+    ############ RELATED TO ROC
     Hit_rate[0]=0
     Hit_rate[16]=1
     false_alarm[0]=0
     false_alarm[16]=1
+
+    ############ RELATED TO ROC
     
     #rel_diag_scores = np.zeros((len_tests,N_e, 6, 3, 2, 10))
     rel_diag_scores = np.zeros((len_tests,N_e, 6, 2, n_c, size_x, size_x))
@@ -152,21 +155,20 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
 
     for i in range(len_tests):
         
-        res = pickle.load(open(Path_to_q + tests_list[i] + name_res, 'rb'))
-        brier = res['brier_score']
+        brier = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_brier_score.npy')
         
-        res = pickle.load(open(Path_to_q + tests_list[i] + name_res, 'rb'))
-        crps = res['ensemble_crps']
-        
-        res = pickle.load(open(Path_to_q + tests_list[i] + name_res, 'rb'))
-        res_rd = pickle.load(open(Path_to_q + tests_list[i] + name_res_rd, 'rb'))
-        s_p = res['skill_spread']
-        rd = res_rd['rel_diagram']
-        r_h = res['rank_histogram']
-        m_bias = res['bias_ensemble']
+        crps = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_ensemble_crps.npy')
+
+        s_p = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_skill_spread.npy')
+
+        r_h = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_rank_histogram.npy')
+
+        m_bias = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_bias_ensemble.npy')
+
+        rd = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_rel_diagram.npy')
         #print(m_bias)
         Brier_scores[i] = brier
-        crps_scores[i] = crps
+        crps_scores[i] = crps[:,:,0]
         s_p_scores[i] = s_p
         rel_diag_scores[i] = rd
         rank_histo[i] = r_h
@@ -178,7 +180,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
     """
     D_i = 0
     LT_i = 0
-    for i in range(592):        
+    for i in range(N_e-2):        
         
         Brier_scores_LT[:,D_i, LT_i] = Brier_scores [:, i]
         crps_scores_LT[:, D_i, LT_i] = crps_scores[:,i]
@@ -186,7 +188,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
         mean_bias_LT[:,D_i, LT_i] = mean_bias[:,i]
         LT_i =LT_i + 1
         
-        if LT_i == 8 : 
+        if LT_i == n_LT : 
             
             D_i = D_i +1
             LT_i = 0
@@ -237,9 +239,10 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
     cases_clean = ['ARO', '1', '2']
     cases_clean = ['ARO', 'BIASED', 'UNBIASED']
     cases_clean = ['AROME', 'uv_deb', 'ff_deb']
+    cases_clean = ['AROME', 'I_200', 'I_400', 'I_600', 'I_800', 'I_1000']
     #cases_clean = ['AROME', 'from_z', 's_w_p_f']
     #cases_clean = ['AROME', '1000', '200', '300_N', '300_Z', '300_R']
-    echeance = ['+3H', '+6H', '+9H', '+12H', '+15H', '+18H', '+21H', '+24H']
+    echeance = ['3H', '6H', '9H', '12H', '15H', '18H', '21H', '24H', '27H', '30H', '33H', '36H', '39H', '42H', '45H']
 ################################################ MEAN BIAS    
     for i in range(n_c):
         
@@ -288,7 +291,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
     N_bins= [17,113,113,113]
     N_bins= [17,113,113, 113, 113,113, 113,113,113,113]  
     N_bins= [17,113, 113]
-    #N_bins= [17,17]
+    N_bins= [17, 17, 17, 17, 17, 17]
     for j in range(n_c):
         for k in range(len_tests):
             fig,axs = plt.subplots(figsize = (9,7))
@@ -321,7 +324,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
 
     
 #####################################################"PLOT REL DIAGRAM
-
+    
     for i in range(6):
         
         for j in range(n_c):
@@ -352,7 +355,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x):
             plt.legend(fontsize = 14,frameon = False, ncol=2)
             plt.savefig('/scratch/mrmn/moldovang/score_ensemble/plots/rel_diag/rel_diag'+str(i)+'_'+str(j)+'.png')
             
-
+    
 
 
 
@@ -610,5 +613,8 @@ tests_list = ['REAL','sm_0_1_10_12_W_1000_iter_OPT_1_debiased', 'sm_1_2_10_12_W_
               'sm_8_9_10_12_W_1000_iter_OPT_1_debiased']
 
 tests_list = ['REAL_newobs', 'sm_3_4_10_12_W_1000_iter_OPT_1_debiased_newobs_uvdeb', 'sm_3_4_10_12_W_1000_iter_OPT_1_debiased_newobs_ffdeb']
+tests_list = ['REAL_newobs', 'sm_3_4_10_12_W_1000_iter_OPT_1_debiased_newobs_uvdeb', 'sm_3_4_10_12_W_1000_iter_OPT_1_debiased_newobs_ffdeb']
 
-plots_ens(tests_list, Path_to_q, 7, 594, 3, 256python3 metric_test_exec_ensemble.py  --expe_name='REAL_256' --subsample 16 --variables=['u','v','t2m'])
+tests_list = ['REAL_256', 'INVERSION_200', 'INVERSION_400', 'INVERSION_600', 'INVERSION_800', 'INVERSION_1000']
+
+plots_ens(tests_list, Path_to_q, 7, 1262, 3, 256, 15, 84)
