@@ -216,7 +216,9 @@ def build_datasets(data_dir, program, df = df0, option='fake', indexList=None,
             elif option=='fake' and data_option=='ens':
                 
                 #fileList = [data_dir + 'Rsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'.npy' for ind in indices ]
-                fileList = [data_dir + 'invertFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_200'+'.npy' for ind in indices ]
+                #fileList = [data_dir + 'invertFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_200'+'.npy' for ind in indices ]
+                fileList = [data_dir + 'genFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_1000'+'.npy' for ind in indices ]
+            
             
             elif option=='fake' and data_option=='sample' :
                 
@@ -572,21 +574,22 @@ def eval_distance_metrics(data):
         fake_data = load_batch(dataset['fake'], n_samples_1, 
                                var_indices_fake = VI_f, option='fake',
                                subsample = fake_sub)
-        
+        fake_data = fake_data.astype(np.float32)
         print('load real')
         real_ens = load_batch(dataset['real'], n_samples_0, 
                                var_indices_real = VI, var_indices_fake = VI_f, 
                                crop_indices = CI, subsample = real_sub)
         
         print(real_ens.shape, real_ens.max())
-        
+        real_ens = real_ens.astype(np.float32)
         print('load obs')
         fake_data = oc.denorm(fake_data, Maxs, Means, 0.95)
+        fake_data = fake_data.astype(np.float32)
         real_data = load_batch(dataset['obs'], n_samples_0, 
                                var_indices_real = VI, var_indices_fake = VI_f, 
                                crop_indices = CI, option = 'obs', subsample = real_sub, N_runs=N_runs, dh=dh)
         
-        
+        real_data = real_data.astype(np.float32)
         #real_data = normalize(real_data, 0.95, Means, Maxs)
         
         print(real_data.shape, fake_data.shape)
@@ -630,17 +633,21 @@ def eval_distance_metrics(data):
     for metric in metrics_list :
     
         print(metric)
+        if list(dataset.keys())==['obs','fake','real']:
+            if metric == 'brier_score' or metric == 'rel_diagram' : 
+                Metric = getattr(metrics, metric)
         
-        if metric == 'brier_score' or metric == 'rel_diagram' : 
+                results[metric] = Metric(real_data, fake_data, real_ens, parameters = parameters, debiasing = debiasing, select = False)
+                
+            else : 
+               Metric = getattr(metrics, metric)
+        
+               results[metric] = Metric(real_data, fake_data, real_ens, debiasing = debiasing, select = False) 
+        else:
             Metric = getattr(metrics, metric)
-    
-            results[metric] = Metric(real_data, fake_data, real_ens, parameters = parameters, debiasing = debiasing, select = False)
-            
-        else : 
-           Metric = getattr(metrics, metric)
-    
-           results[metric] = Metric(real_data, fake_data, real_ens, debiasing = debiasing, select = False) 
-    
+            print(Metric)
+            results[metric] = Metric(real_data, fake_data, select = False)
+                
     return results, index
 
 def global_dataset_eval(data):

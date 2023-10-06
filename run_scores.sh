@@ -95,4 +95,52 @@
 #python3 metric_test_exec_ensemble.py  --expe_name='sm_3_4_10_12_W_1000_iter_OPT_1_debiased_newobs_uvdeb' --subsample 112 --variables=['u','v','t2m'] &> out3_4_10_12.txt &
 #python3 metric_test_exec_ensemble.py  --expe_name='REAL_newobs' --subsample 16 --variables=['u','v','t2m'] &> REAL.txt &
 #python3 metric_test_exec_ensemble.py  --expe_name='sm_3_4_10_12_W_1000_iter_OPT_1_debiased_newobs_ffdeb' --subsample 112 --variables=['u','v','t2m'] &> out3_4_10_12.txt &
-python3 metric_test_exec_ensemble.py  --expe_name='INVERSION_200' --subsample 16 --variables=['u','v','t2m'] &> out3_4_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='INVERSION_200' --subsample 16 --variables=['u','v','t2m'] &> out3_4_10_12.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="REAL_256" --subsample 16 --variables=['u','v','t2m'] &> outREAL.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['0', '1', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out011414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '2', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out121414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['2', '3', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out231414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['3', '4', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out341414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['4', '5', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out451414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['5', '6', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out561414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['6', '7', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out671414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['7', '8', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out781414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['8', '9', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out891414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['9', '10', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out9101414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['10', '11', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out10111414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['11', '12', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out11121414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['12', '13', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out12131414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['13', '14', '14', '14']" --subsample 112 --variables=['u','v','t2m'] &> out13141414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['0', '1', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out011414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '2', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out121414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['2', '3', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out231414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['3', '4', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out341414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['4', '5', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out451414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['5', '6', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out561414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['6', '7', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out671414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['7', '8', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out781414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['8', '9', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out891414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['9', '10', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out9101414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['10', '11', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out10111414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['11', '12', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out11121414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['12', '13', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out12131414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['13', '14', '14', '14']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out13141414.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '0', '1', '1', '1', '1', '0', '1', '1', '1', '0', '1', '1', '1']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outopt.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out0_3.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['0', '0', '0', '0', '0', '0', '1', '1', '0', '0', '0', '0', '0', '0']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out6_8.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '1', '1', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> out0_3_8_14.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['0', '0', '0', '0', '1', '1', '1', '0', '0', '1', '0', '0', '1', '1']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest1.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['0', '1', '0', '0', '1', '1', '0', '1', '1', '1', '0', '1', '1', '1']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest2.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '1', '0', '0', '0', '1', '0', '0', '1', '0', '1', '1', '0', '0']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest3.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['0', '0', '1', '0', '1', '1', '1', '1', '0', '1', '0', '0', '0', '1']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest4.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '1', '0', '0', '1', '1', '1', '0', '0', '1', '0', '0', '1', '1']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest5.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '1', '1', '0', '1', '0', '0', '0', '1', '1', '1', '1', '1', '1']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest6.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '1', '0', '0', '1', '0', '0', '0', '1', '1', '1', '1', '1', '1']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest7.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '0', '0', '0', '1', '0', '0', '0', '1', '1', '1', '1', '1', '1']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest8.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['0', '0', '0', '0', '1', '0', '0', '0', '1', '1', '1', '1', '1', '1']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest9.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '0']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest1.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '1', '0', '0', '0', '0', '0', '0', '0', '1', '0', '0', '1', '0']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest2.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '1', '0', '0', '0', '0', '0', '1', '0', '0', '0', '0', '1', '0']" --debiasing=True --subsample 112 --variables=['u','v','t2m'] &> outtest3.txt &
+#python3 metric_test_exec_ensemble.py  --expe_name='INVERSION_200' --subsample 16 --variables=['u','v','t2m']
+python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '0', '1', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '0']" --subsample 112 --variables=['u','v','t2m'] &> outtest1.txt &
+python3 metric_test_exec_ensemble.py  --expe_name="random_['1', '0', '0', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0']" --subsample 112 --variables=['u','v','t2m'] &> outtest2.txt &

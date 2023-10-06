@@ -74,5 +74,4 @@ def bias_ens(cond, X,real_ens, debiasing = False):
     
     X_p_mean = X_p.mean(axis=0)
     X_bias = X_p_mean - cond_p
-
     return X_bias

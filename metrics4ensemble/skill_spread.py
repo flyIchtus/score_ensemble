@@ -72,12 +72,12 @@ def skill_spread(cond, X,real_ens, debiasing = False):
     
     skill = X_p.mean(axis=0) - cond_p
     
-    spread = X_p.std(axis=0)
+    var = X_p.var(axis=0, ddof = 1)
     
     
     sp_out[0] = skill
     
-    sp_out[1] = spread
+    sp_out[1] = var
 
 
         
