@@ -24,7 +24,7 @@ if __name__=="__main__":
     
     configuration_set=getAndNameDirs(root_expe_path)
     print(configuration_set)
-    N_samples = 1260
+    N_samples = 300
 
     N_runs = 15
     dh = 3 # echeance
@@ -33,7 +33,7 @@ if __name__=="__main__":
     program = {i :(1,N_samples) for i in range(1)}   # program={i :(1,N_samples) for i in range(1)}
 
     distance_metrics_list = ['bias_ensemble','rank_histogram', 'skill_spread', 'brier_score', 'ensemble_crps', 'rel_diagram']#, "brier_score","entropy"]
-    #distance_metrics_list = ["ensemble_crps"]
+    #distance_metrics_list = ["mae"]
     standalone_metrics_list = ["quantiles"]#, "variance"]
     
     parameters = np.zeros((2,6))
@@ -51,7 +51,7 @@ if __name__=="__main__":
         #try :
             
         
-        mC = frontend.EnsembleMetricsCalculator(expe_config, 'distance_metrics_200')
+        mC = frontend.EnsembleMetricsCalculator(expe_config, 'distance_metrics')
         
         #mC.estimation(standalone_metrics_list, program, standalone=True, parallel=True, subsample=16)
         mC.estimation(distance_metrics_list, program, standalone=False, parallel=False,

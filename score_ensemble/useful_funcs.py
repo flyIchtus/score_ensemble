@@ -151,6 +151,6 @@ def obs_clean(obs, crop_indices) :
     return Ens_observation
 
 def denorm(mat, Maxs, Means, scale):
-    mat = mat*(1./0.95)*Maxs+Means
 
-    return mat
+
+    return mat*(1./0.95)*Maxs+Means

@@ -66,43 +66,43 @@ def plot_mean_var_1l(Ens_proj_var, ref, name):
 
 def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     
-    Means = np.load('/scratch/mrmn/moldovang/IS_1_1.0_0_0_0_0_0_256_done/mean_with_orog.npy')[1:4].reshape(3,1,1)
-    Maxs = np.load('/scratch/mrmn/moldovang/IS_1_1.0_0_0_0_0_0_256_done/max_with_orog.npy')[1:4].reshape(3,1,1)
+    #Means = np.load('/scratch/mrmn/moldovang/IS_1_1.0_0_0_0_0_0_256_done/mean_with_orog.npy')[1:4].reshape(3,1,1)
+    #Maxs = np.load('/scratch/mrmn/moldovang/IS_1_1.0_0_0_0_0_0_256_done/max_with_orog.npy')[1:4].reshape(3,1,1)
     
-    print(Means, Maxs)
-    Stds = (1.0/0.95) * Maxs
-    data_dir = '/scratch/mrmn/moldovang/IS_1_1.0_0_0_0_0_0_256_done/'
+    #print(Means, Maxs)
+    #Stds = (1.0/0.95) * Maxs
+    # data_dir = '/scratch/mrmn/moldovang/IS_1_1.0_0_0_0_0_0_256_done/'
     
-    transform = transforms.Compose(
-        [
-            transforms.ToTensor(),
-            #transforms.Normalize(Means, Stds),
-        ]
-    )
+    # transform = transforms.Compose(
+    #     [
+    #         transforms.ToTensor(),
+    #         #transforms.Normalize(Means, Stds),
+    #     ]
+    # )
     
-    data = np.load(data_dir + '_sample1' + '.npy')[0:5,78:206,55:183].astype(np.float32)
-    data = data.transpose((1,2,0))
-    img = transform(data)
+    # data = np.load(data_dir + '_sample1' + '.npy')[0:5,78:206,55:183].astype(np.float32)
+    # data = data.transpose((1,2,0))
+    # img = transform(data)
     
-    sea_indices = []
-    mountain_indices = []
-    plain_indices = []
-    for i in range(128):
-        for j in range(128):
+    # sea_indices = []
+    # mountain_indices = []
+    # plain_indices = []
+    # for i in range(128):
+    #     for j in range(128):
             
-            if img[4,i,j] == 0:
+    #         if img[4,i,j] == 0:
                 
-                sea_indices.append([i,j])
-            elif img[4,i,j] >  1000.:
-                mountain_indices.append([i,j])
+    #             sea_indices.append([i,j])
+    #         elif img[4,i,j] >  1000.:
+    #             mountain_indices.append([i,j])
             
-            else :
-                plain_indices.append([i,j])
+    #         else :
+    #             plain_indices.append([i,j])
                 
                 
-    sea_indices = np.array(sea_indices)
-    mountain_indices = np.array(mountain_indices)
-    plain_indices = np.array(plain_indices)
+    # sea_indices = np.array(sea_indices)
+    # mountain_indices = np.array(mountain_indices)
+    # plain_indices = np.array(plain_indices)
 
     
     font = {'family': 'serif',
@@ -155,17 +155,17 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
 
     for i in range(len_tests):
         
-        brier = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_brier_score.npy')
+        brier = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_brier_score.npy')
         
-        crps = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_ensemble_crps.npy')
+        crps = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_ensemble_crps.npy')
 
-        s_p = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_skill_spread.npy')
+        s_p = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_skill_spread.npy')
 
-        r_h = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_rank_histogram.npy')
+        r_h = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_rank_histogram.npy')
 
-        m_bias = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_bias_ensemble.npy')
+        m_bias = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_bias_ensemble.npy')
 
-        rd = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_1260_rel_diagram.npy')
+        rd = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_rel_diagram.npy')
         #print(m_bias)
         Brier_scores[i] = brier
         crps_scores[i] = crps[:,:,0]
@@ -197,7 +197,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     #############################################################################################
     
     
-    color_p = ['black', 'royalblue', 'darkgreen', 'darkorange', 'red', 'cyan', 'gold', 'pink', 'tan', 'slategray', 'purple', 'palegreen']
+    color_p = ['black', 'royalblue', 'darkgreen', 'darkorange', 'red', 'cyan', 'gold', 'pink', 'tan', 'slategray', 'purple', 'palegreen', 'orchid', 'crimson', 'firebrick']
 
     case_name = [['ff=3 (m/s)', 'ff=4 (m/s)', 'ff=5 (m/s)', 'ff=6 (m/s)', 'ff=7 (m/s)', 'ff=8 (m/s)'],
                  ['', '', '', '', '', ''], 
@@ -240,6 +240,10 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     cases_clean = ['ARO', 'BIASED', 'UNBIASED']
     cases_clean = ['AROME', 'uv_deb', 'ff_deb']
     cases_clean = ['AROME', 'I_200', 'I_400', 'I_600', 'I_800', 'I_1000']
+    cases_clean = ['AROME', 'R_0_1', 'R_1_2', 'R_2_3','R_3_4','R_4_5', 'R_5_6', 'R_6_7', 'R_7_8', 'R_8_9', 'R_9_10', 'R_10_11', 'R_11_12', 'R_12_13', 'R_13_14']
+    #cases_clean = ['AROME', 'R_0_1', 'R_1_2', 'R_2_3','R_3_4','R_4_5', 'R_5_6', 'R_6_7']
+    cases_clean = ['AROME', 'R_03', 'R_68', 'R_03814', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6',]
+
     #cases_clean = ['AROME', 'from_z', 's_w_p_f']
     #cases_clean = ['AROME', '1000', '200', '300_N', '300_Z', '300_R']
     echeance = ['3H', '6H', '9H', '12H', '15H', '18H', '21H', '24H', '27H', '30H', '33H', '36H', '39H', '42H', '45H']
@@ -291,7 +295,8 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     N_bins= [17,113,113,113]
     N_bins= [17,113,113, 113, 113,113, 113,113,113,113]  
     N_bins= [17,113, 113]
-    N_bins= [17, 17, 17, 17, 17, 17]
+    N_bins= [17,113,113, 113, 113,113, 113,113, 113,113,113,113,113,113,113]
+    N_bins= [17, 113, 113, 113,113,113,113,113, 113,113] 
     for j in range(n_c):
         for k in range(len_tests):
             fig,axs = plt.subplots(figsize = (9,7))
@@ -431,7 +436,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
                 plt.plot(np.sqrt(np.nanmean(s_p_scores_LT[k,:,:,0,i]**2., axis =(0,2,3))), label = cases_clean[k], color= color_p[k] )
                 #plt.plot(np.nanmean(s_p_scores_LT[k,:,:,1,i], axis =(0,2,3))/np.sqrt(np.nanmean(s_p_scores_LT[k,:,:,0,i]**2., axis =(0,2,3))), label = cases_clean[k], color= color_p[k] )
 
-                plt.plot(np.nanmean(s_p_scores_LT[k,:,:,1,i], axis =(0,2,3)), linestyle='dashed', color= color_p[k] )
+                plt.plot(np.nanmean(np.sqrt(np.nanmean(s_p_scores_LT[k,:,:,1,i], axis =(0))), axis=(-2,-1)), linestyle='dashed', color= color_p[k] )
                 plt.xticks( fontsize ='18')
                 axs.set_xticks(range(len(echeance)))
                 axs.set_xticklabels(echeance)
@@ -617,4 +622,17 @@ tests_list = ['REAL_newobs', 'sm_3_4_10_12_W_1000_iter_OPT_1_debiased_newobs_uvd
 
 tests_list = ['REAL_256', 'INVERSION_200', 'INVERSION_400', 'INVERSION_600', 'INVERSION_800', 'INVERSION_1000']
 
-plots_ens(tests_list, Path_to_q, 7, 1262, 3, 256, 15, 84)
+tests_list = ['REAL_256',"random_['0', '1', '14', '14']", "random_['1', '2', '14', '14']", "random_['2', '3', '14', '14']", "random_['3', '4', '14', '14']",
+              "random_['4', '5', '14', '14']", "random_['5', '6', '14', '14']", "random_['6', '7', '14', '14']", "random_['7', '8', '14', '14']",
+              "random_['8', '9', '14', '14']", "random_['9', '10', '14', '14']", "random_['10', '11', '14', '14']", 
+              "random_['11', '12', '14', '14']", "random_['12', '13', '14', '14']", "random_['13', '14', '14', '14']"]
+#tests_list = ['REAL_256',"random_['0', '1', '14', '14']", "random_['1', '2', '14', '14']", "random_['2', '3', '14', '14']", "random_['3', '4', '14', '14']",
+#              "random_['4', '5', '14', '14']", "random_['5', '6', '14', '14']", "random_['6', '7', '14', '14']"]
+tests_list = ['REAL_256', "random_['1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']", "random_['0', '0', '0', '0', '0', '0', '1', '1', '0', '0', '0', '0', '0', '0']",
+            "random_['1', '1', '1', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1']",
+            "random_['1', '1', '1', '0', '1', '0', '0', '0', '1', '1', '1', '1', '1', '1']", "random_['1', '1', '0', '0', '1', '0', '0', '0', '1', '1', '1', '1', '1', '1']",
+            "random_['1', '0', '0', '0', '1', '0', '0', '0', '1', '1', '1', '1', '1', '1']", "random_['0', '0', '0', '0', '1', '0', '0', '0', '1', '1', '1', '1', '1', '1']",
+            "random_['1', '0', '1', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '0']", "random_['1', '0', '0', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0']"]
+
+
+plots_ens(tests_list, Path_to_q, 7, 302, 3, 256, 15, 20)

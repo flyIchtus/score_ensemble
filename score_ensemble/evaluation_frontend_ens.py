@@ -180,7 +180,6 @@ class EnsembleMetricsCalculator(Experiment) :
             np.save(dumpfile+'_'+metrics_list[i] + '.npy', results[0][metrics_list[i]])  
 
         #print(dumpfile, metrics_list, results)
-        #print(caca)
         #pickle.dump(results, open(dumpfile, 'wb'))
         
         
@@ -220,11 +219,11 @@ class EnsembleMetricsCalculator(Experiment) :
             
             print('Step', step)
             
-            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program)
+            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program,  N_runs=self.N_runs, dh=self.dh)
             
             dataset_r, _ = backend.build_datasets(data_dir_real, self.program,
                                                option = 'real',
-                                               indexList = indexList) # taking the 'same ensemble' for fake and real
+                                               indexList = indexList,  N_runs=self.N_runs, dh=self.dh) # taking the 'same ensemble' for fake and real
             
            
             data_list = []
@@ -311,7 +310,6 @@ class EnsembleMetricsCalculator(Experiment) :
                                                option = 'real',
                                                indexList = indexList, N_runs=self.N_runs, dh=self.dh) # taking the 'same ensemble' for fake and real
             data_list = []
-            
             for i0 in self.program.keys():
                 
                 data_o = dataset_o[i0]
@@ -389,11 +387,11 @@ class EnsembleMetricsCalculator(Experiment) :
             
             print('Step', step)
         
-            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program)
+            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program, N_runs=self.N_runs, dh=self.dh)
             
             dataset_r, _ = backend.build_datasets(data_dir_real, self.program,
                                                option = 'real',
-                                               indexList = indexList) # taking the 'same ensemble' for fake and real
+                                               indexList = indexList, N_runs=self.N_runs, dh=self.dh) # taking the 'same ensemble' for fake and real
             
             res = []
             
