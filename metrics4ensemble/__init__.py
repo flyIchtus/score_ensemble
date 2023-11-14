@@ -14,18 +14,18 @@ File include :
 
 """
 
-import general_metrics as GM
-import quantiles_metric as quant
-import entropy as Entropy
-import brier_score as BS
-import CRPS_calc as CRPS_calc
-import skill_spread as SP
-import rel_diagram as RD
-import rank_histogram as RH
-import bias_ensemble as BE
-import mean_bias as mb
+import metrics4ensemble.general_metrics as GM
+import metrics4ensemble.quantiles_metric as quant
+import metrics4ensemble.entropy as Entropy
+import metrics4ensemble.brier_score as BS
+import metrics4ensemble.CRPS_calc as CRPS_calc
+import metrics4ensemble.skill_spread as SP
+import metrics4ensemble.rel_diagram as RD
+import metrics4ensemble.rank_histogram as RH
+import metrics4ensemble.bias_ensemble as BE
+import metrics4ensemble.mean_bias as mb
 import metrics4ensemble.spectral_variance as spvar
-import mae as mae
+import metrics4ensemble.mse_bias as mse_bias
 
 import numpy as np
 ###################### standard parameters
@@ -108,7 +108,7 @@ class metric2D_ens():
             
             res = np.zeros((data[0].shape[0] + 2,) + self.end_shape).astype(np.float32)
             
-            if self.func.__name__ == "mae" :
+            if (self.func.__name__ == "mse") or (self.func.__name__ == "bias") :
                 for i in range(data[0].shape[0]) :
                     res[i] = self.func(data[0][i], data[1][i],**reliq_kwargs)
                 
@@ -149,7 +149,7 @@ class metric2D_ens():
         
 standalone_metrics = {"spectral_dev","spectral_var","quantiles", "variance"}
 
-distance_metrics = {"quantile_score", "entropy", "mae", "bias_ensemble", "ensemble_crps", "brier_score", "skill_spread", "rel_diagram", "rank_histogram",  "variance_diff", "mean_bias", "std_diff", "rel_std_diff"}
+distance_metrics = {"quantile_score", "entropy", "mse", "bias", "bias_ensemble", "ensemble_crps", "brier_score", "skill_spread", "rel_diagram", "rank_histogram",  "variance_diff", "mean_bias", "std_diff", "rel_std_diff"}
 
 
 ###################### Usable namespace #######################################
@@ -177,7 +177,9 @@ rank_histogram = metric2D_ens('Reliability diagram',
                              RH.rank_histo, vars_wo_orog, end_shape = (3,121))
 bias_ensemble = metric2D_ens('Average bias', BE.bias_ens, vars_wo_orog)
 
-mae = metric2D_ens('Maximum absolute error', mae.mae, vars_wo_orog)
+mse = metric2D_ens('Maximum absolute error', mse_bias.mse, vars_wo_orog)
+
+bias = metric2D_ens('Maximum absolute error', mse_bias.bias, vars_wo_orog)
 
 variance = metric2D_ens('Variance per variable',
                         GM.simple_variance, vars_wo_orog)

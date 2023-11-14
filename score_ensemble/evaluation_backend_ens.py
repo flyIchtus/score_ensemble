@@ -20,55 +20,62 @@ import copy
 ############## ATTENTION HARD CODING AHEAD###############
 ########### standard parameters #####
 
-num_proc = 8
+#num_proc = 8
 var_dict = {'rr': 0, 'u': 1, 'v': 2, 't2m': 3, 'orog': 4} # do not touch unless
                                                           # you know what u are doing
 
 #data_dir_real = '/scratch/mrmn/brochetc/GAN_2D/datasets_full_indexing/IS_1_1.0_0_0_0_0_0_256_done/'
-data_dir_real = '/scratch/mrmn/brochetc/GAN_2D/datasets_full_indexing/IS_1_1.0_0_0_0_0_0_256_large_lt_done/'
-data_dir_obs = '/scratch/mrmn/moldovang/obs_databases/obs_full_npy/'
+#data_dir_real = '/scratch/work/brochetc/datasets/IS_1_1.0_0_0_0_0_0_256_large_lt_done/'
+#data_dir_obs = '/scratch/work/brochetc/datasets/obs_full_npy/'
 
-data_dir_inv = '/scratch/mrmn/brochetc/GAN_2D/datasets_full_indexing/IS_1_1.0_0_0_0_0_0_256_large_lt_done/'
+#data_dir_inv = '/scratch/mrmn/brochetc/GAN_2D/datasets_full_indexing/IS_1_1.0_0_0_0_0_0_256_large_lt_done/'
 
 ################################ This is done to obtain the dates used for the forecast and the observation
 
-df0 = pd.read_csv(data_dir_inv + 'Large_lt_val_labels.csv')
+# df0 = pd.read_csv(data_dir_real + 'Large_lt_test_labels.csv')
 
-df1 = pd.read_csv(data_dir_inv + 'Large_lt_val_labels.csv')
+# df1 = pd.read_csv(data_dir_real + 'Large_lt_test_labels.csv')
 
-List_dates_unique = df0["Date"].unique().tolist()
-List_dates_inv = df1["Date"].unique().tolist()
-List_dates_inv_org = copy.deepcopy(List_dates_inv)
+# List_dates_unique = df0["Date"].unique().tolist()
+# List_dates_inv = df1["Date"].unique().tolist()
 
+# List_dates_inv.remove('2021-10-29T21:00:00Z') #31.10.2021 obs missing
+# List_dates_inv.remove('2021-10-30T21:00:00Z')
+# List_dates_unique.remove('2021-10-29T21:00:00Z') #31.10.2021 obs missing
+# List_dates_unique.remove('2021-10-30T21:00:00Z')
 
+# List_dates_inv_org = copy.deepcopy(List_dates_inv)
+# List_dates_unique.sort()
+# List_dates_inv_org.sort()
+# List_dates_inv.sort()
 
-for i in range(len(List_dates_unique)):
-    List_dates_unique[i]=List_dates_unique[i].replace("T21:00:00Z","")
-    List_dates_unique[i]=List_dates_unique[i].replace("-","")
+# for i in range(len(List_dates_unique)):
+#     List_dates_unique[i]=List_dates_unique[i].replace("T21:00:00Z","")
+#     List_dates_unique[i]=List_dates_unique[i].replace("-","")
 
-for i in range(len(List_dates_inv)):
-    List_dates_inv[i]=List_dates_inv[i].replace("T21:00:00Z","")
+# for i in range(len(List_dates_inv)):
+#     List_dates_inv[i]=List_dates_inv[i].replace("T21:00:00Z","")
     
 
 
 
-############### Putting all the available observation dates in a list
+# ############### Putting all the available observation dates in a list
 
-fl_obs = glob.glob(data_dir_obs+"/obs*")
+# fl_obs = glob.glob(data_dir_obs+"/obs*")
 
-len_fl_obs = len(fl_obs)
+# len_fl_obs = len(fl_obs)
 
-for i in range(len_fl_obs):
-    fl_obs[i] = fl_obs[i].replace(data_dir_obs, "")
-    fl_obs[i] = fl_obs[i].replace(".npy", "")
-    fl_obs[i] = fl_obs[i].replace("obs", "")
+# for i in range(len_fl_obs):
+#     fl_obs[i] = fl_obs[i].replace(data_dir_obs, "")
+#     fl_obs[i] = fl_obs[i].replace(".npy", "")
+#     fl_obs[i] = fl_obs[i].replace("obs", "")
     
-    fl_obs[i] = fl_obs[i][0:8]
-    #print(fl_obs[i])
+#     fl_obs[i] = fl_obs[i][0:8]
+#     #print(fl_obs[i])
 
-fl_obs=list(set(fl_obs))
+# fl_obs=list(set(fl_obs))
 
-fl_obs.sort()
+# fl_obs.sort()
 
 #####################################
 
@@ -94,7 +101,7 @@ def split_dataset(file_list,N_parts):
     return [to_split[inds[i]:inds[i+1]] for i in range(N_parts)]
 
 
-def match_ensemble_to_samples(indices, df, data_dir, mode = 'Ens2Samples'):
+def match_ensemble_to_samples(indices, df, data_dir, mode = 'Ens2Samples', List_dates_inv_org=None):
     """
     fetch corresponding filenames from one dataset preparation to another
     (i.e from _samples to ensembles or reverse, depending on the mode)
@@ -156,8 +163,9 @@ def normalize(BigMat, scale, Mean, Max):
     return  res
 
 
-def build_datasets(data_dir, program, df = df0, option='fake', indexList=None,
-                   data_option='ens', dh = None, N_runs = None):
+def build_datasets(data_dir, program, option='fake', indexList=None,
+                   data_option='ens', dh = None, N_runs = None, List_dates_inv=None, data_dir_real=None,
+                   List_dates_inv_org=None):
     """
     
     Build file lists to get samples, as specified in the program dictionary
@@ -184,7 +192,7 @@ def build_datasets(data_dir, program, df = df0, option='fake', indexList=None,
         specified in the "program" items. Can be nested.
     
     """
-        
+    df = pd.read_csv(data_dir_real + 'Large_lt_val_labels.csv')    
     res = {}
     
     for key, value in program.items():
@@ -202,7 +210,6 @@ def build_datasets(data_dir, program, df = df0, option='fake', indexList=None,
 
             indices = [(i//N_runs, i%N_runs) for i in indexList]
             print(indices, value[1])
-            #print(caca)            
             if option == 'observation':
                 
                 fileList = [data_dir + 'obs_'+str(ind[0])+'_'+str(ind[1])+'.npy'
@@ -211,12 +218,12 @@ def build_datasets(data_dir, program, df = df0, option='fake', indexList=None,
             
             if option=='real' : ### we are going to gather individual samples
                 
-                fileList = match_ensemble_to_samples(indices, df, data_dir)
+                fileList = match_ensemble_to_samples(indices, df, data_dir, List_dates_inv_org=List_dates_inv_org)
             
             elif option=='fake' and data_option=='ens':
                 
                 #fileList = [data_dir + 'Rsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'.npy' for ind in indices ]
-                #fileList = [data_dir + 'invertFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_200'+'.npy' for ind in indices ]
+                #fileList = [data_dir + 'invertFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_800'+'.npy' for ind in indices ]
                 fileList = [data_dir + 'genFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_1000'+'.npy' for ind in indices ]
             
             
@@ -274,7 +281,8 @@ def build_datasets(data_dir, program, df = df0, option='fake', indexList=None,
 def load_batch(file_list, number,\
                var_indices_real = None, var_indices_fake = None,
                crop_indices = None,
-               option = 'real', subsample=16, deterministic=True, N_runs=None, dh=None):
+               option = 'real', subsample=16, deterministic=True, N_runs=None, dh=None, fl_obs=None,
+               List_dates_unique=None, data_dir_obs=None):
      
     """
     gather a fixed number of random samples present in file_list into a single big matrix
@@ -403,6 +411,7 @@ def load_batch(file_list, number,\
 
     elif option=='real':
         
+
         # in this case samples are stored once per file
         
         Shape=(len(var_indices_real),
@@ -463,7 +472,6 @@ def load_batch(file_list, number,\
                 
                 hour = (LT_index)*dh
                     
-            #print("hello", List_dates_unique[D_index], D_index, hour, fl_obs.index(List_dates_unique[D_index]))
             if hour_LT > 23:
                 obs = np.load(data_dir_obs+"obs" + fl_obs[fl_obs.index(List_dates_unique[D_index])+2] + "_" +str(hour) + ".npy") # the +1 is needed since the simulation starts at 21:00 the day-1 first observations are available at 00:00 the next day
                 
@@ -533,8 +541,8 @@ def eval_distance_metrics(data):
         
     """
     
-    print(data)
-    metrics_list, dataset, n_samples_0, n_samples_1, VI, VI_f, CI, index, subsample, parameters, N_runs, dh, debiasing = data
+    #print(data)
+    metrics_list, dataset, n_samples_0, n_samples_1, VI, VI_f, CI, index, subsample, parameters, N_runs, dh, debiasing, data_dir_real, data_dir_obs,List_dates_inv, sList_dates_inv_org, List_dates_unique,fl_obs= data
     print('Subsample', subsample)
     ## loading and normalizing data
     
@@ -554,31 +562,33 @@ def eval_distance_metrics(data):
         print('load fake')  
         fake_data = load_batch(dataset['fake'], n_samples_1, 
                                var_indices_fake = VI_f, option='fake',
-                               subsample = fake_sub)
-        
+                               subsample = fake_sub, fl_obs=fl_obs,
+               List_dates_unique=List_dates_unique, data_dir_obs=data_dir_obs)
+        fake_data = oc.denorm(fake_data, Maxs, Means, 0.95)
         print('load real')
         real_data = load_batch(dataset['real'], n_samples_0, 
                                var_indices_real = VI, var_indices_fake = VI_f, 
-                               crop_indices = CI, subsample = real_sub)
+                               crop_indices = CI, subsample = real_sub, fl_obs=fl_obs,
+               List_dates_unique=List_dates_unique, data_dir_obs=data_dir_obs)
         
-        
-        real_data = normalize(real_data, 0.95, Means, Maxs)
-        
+        #real_data = normalize(real_data, 0.95, Means, Maxs)
         print(real_data.shape, fake_data.shape)
         
     elif list(dataset.keys())==['obs','fake','real']:
-    
+
         print('index',index)
             
         print('load fake')  
         fake_data = load_batch(dataset['fake'], n_samples_1, 
                                var_indices_fake = VI_f, option='fake',
-                               subsample = fake_sub)
+                               subsample = fake_sub, fl_obs=fl_obs,
+               List_dates_unique=List_dates_unique, data_dir_obs=data_dir_obs)
         fake_data = fake_data.astype(np.float32)
         print('load real')
         real_ens = load_batch(dataset['real'], n_samples_0, 
                                var_indices_real = VI, var_indices_fake = VI_f, 
-                               crop_indices = CI, subsample = real_sub)
+                               crop_indices = CI, subsample = real_sub, fl_obs=fl_obs,
+               List_dates_unique=List_dates_unique, data_dir_obs=data_dir_obs)
         
         print(real_ens.shape, real_ens.max())
         real_ens = real_ens.astype(np.float32)
@@ -587,7 +597,8 @@ def eval_distance_metrics(data):
         fake_data = fake_data.astype(np.float32)
         real_data = load_batch(dataset['obs'], n_samples_0, 
                                var_indices_real = VI, var_indices_fake = VI_f, 
-                               crop_indices = CI, option = 'obs', subsample = real_sub, N_runs=N_runs, dh=dh)
+                               crop_indices = CI, option = 'obs', subsample = real_sub, N_runs=N_runs, dh=dh, fl_obs=fl_obs,
+               List_dates_unique=List_dates_unique, data_dir_obs=data_dir_obs)
         
         real_data = real_data.astype(np.float32)
         #real_data = normalize(real_data, 0.95, Means, Maxs)
@@ -595,7 +606,7 @@ def eval_distance_metrics(data):
         print(real_data.shape, fake_data.shape)
         
     elif list(dataset.keys())==['real0', 'real1']:
-    
+
         print('index', index)
     
         real_data0 = load_batch(dataset['real0'],n_samples_0, 

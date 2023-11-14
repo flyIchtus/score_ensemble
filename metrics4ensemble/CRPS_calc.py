@@ -11,7 +11,7 @@ AROME-specific version of CRPS
 
 import properscoring as ps
 import numpy as np
-import wind_comp as wc
+import metrics4ensemble.wind_comp as wc
 import copy
 import CRPS.CRPS as psc
 def ensemble_crps(cond, X, real_ens, debiasing = False):
@@ -64,7 +64,9 @@ def ensemble_crps(cond, X, real_ens, debiasing = False):
     #print(Bias.shape, real_ens_p_mean.shape, real_ens_p.shape, X_p_mean.shape)
     #X_p = X_p + Bias
 
-    if debiasing == True : 
+    if debiasing == True :
+        print('I am debiasing')
+ 
         X_p = wc.debiasing(X_p, real_ens_p)
     #N_a=int(X_p.shape[0]/real_ens_p.shape[0])
     #for i in range(int(real_ens_p.shape[0])):

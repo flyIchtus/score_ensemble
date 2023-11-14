@@ -6,7 +6,7 @@ AROME-specific version of skill_spread
 """
 
 import numpy as np
-import wind_comp as wc
+import metrics4ensemble.wind_comp as wc
 import copy
 
 

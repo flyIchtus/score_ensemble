@@ -13,10 +13,10 @@ from score_ensemble.configurate_ens import getAndNameDirs, select_Config
 import numpy as np
 
 
-original_data_dir='/scratch/mrmn/moldovang/'
+original_data_dir='/scratch/work/moldovang/'
 
 
-root_expe_path = '/scratch/mrmn/moldovang/tests_CGAN/'
+root_expe_path = '/scratch/work/moldovang/tests_CGAN/'
     
 if __name__=="__main__":
     
@@ -24,7 +24,7 @@ if __name__=="__main__":
     
     configuration_set=getAndNameDirs(root_expe_path)
     print(configuration_set)
-    N_samples = 300
+    N_samples = 1260
 
     N_runs = 15
     dh = 3 # echeance
@@ -33,7 +33,7 @@ if __name__=="__main__":
     program = {i :(1,N_samples) for i in range(1)}   # program={i :(1,N_samples) for i in range(1)}
 
     distance_metrics_list = ['bias_ensemble','rank_histogram', 'skill_spread', 'brier_score', 'ensemble_crps', 'rel_diagram']#, "brier_score","entropy"]
-    #distance_metrics_list = ["mae"]
+    #distance_metrics_list = ["mse", "bias"]
     standalone_metrics_list = ["quantiles"]#, "variance"]
     
     parameters = np.zeros((2,6))
@@ -43,6 +43,9 @@ if __name__=="__main__":
     #parameters[1] = [278.15, 281.15, 283.15, 285.15, 287.15, 289.15] #treshold for brier scores for temperature
     sbsample = configuration_set.subsample
     debiasing = configuration_set.debiasing
+    num_proc = configuration_set.num_proc
+    data_dir_real = configuration_set.data_dir_real
+    data_dir_obs = configuration_set.data_dir_obs
     
     for ind in range(configuration_set.length):
         
@@ -55,7 +58,8 @@ if __name__=="__main__":
         
         #mC.estimation(standalone_metrics_list, program, standalone=True, parallel=True, subsample=16)
         mC.estimation(distance_metrics_list, program, standalone=False, parallel=False,
-                      observation = True, subsample=sbsample, parameters = parameters, N_runs=N_runs, dh=dh, debiasing = debiasing)
+                      observation = True, subsample=sbsample, parameters = parameters, N_runs=N_runs, dh=dh, debiasing = debiasing,
+                      num_proc=num_proc, data_dir_real=data_dir_real, data_dir_obs = data_dir_obs)
         
         #mC = frontend.EnsembleMetricsCalculator(expe_config, 'rel_diagram')
         
