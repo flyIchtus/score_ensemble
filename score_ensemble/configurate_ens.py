@@ -95,6 +95,12 @@ def getAndNameDirs(root_expe_path):
     parser.add_argument('--variables', type = str2list, help = 'List of subset of variables to compute metrics on', default =[])
     parser.add_argument('--subsample', type = int, help = 'number of members in ensemble', default = 16)
     parser.add_argument('--debiasing', type = bool, help = 'debiasing or not', default = False)
+    parser.add_argument('--num_proc', type = int, help = 'number of procs', default = 8)
+    parser.add_argument('--data_dir_real', type = str, help = 'data_dir_real where database is', default = '')
+    parser.add_argument('--data_dir_obs', type = str, help = 'data_dir_real where obs is', default = '')
+
+
+
 
     multi_config=parser.parse_args()
     

@@ -152,5 +152,6 @@ def obs_clean(obs, crop_indices) :
 
 def denorm(mat, Maxs, Means, scale):
 
-
-    return mat*(1./0.95)*Maxs+Means
+    
+    res = mat*(1./0.95)*Maxs.astype('float32')+Means.astype('float32')
+    return res

@@ -7,7 +7,7 @@ AROME-specific version of skill_spread
 
 import properscoring as ps
 import numpy as np
-import wind_comp as wc
+import metrics4ensemble.wind_comp as wc
 import copy
 
 def brier_score(cond, X,real_ens, parameters, debiasing = False ):

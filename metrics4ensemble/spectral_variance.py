@@ -6,7 +6,7 @@ Created on Wed May 10 13:23:53 2023
 @author: brochetc
 """
 
-import spectrum_analysis as spec
+import metrics4ensemble.spectrum_analysis as spec
 import numpy as np
 
 def spectrum_deviation(X):

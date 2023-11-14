@@ -12,11 +12,12 @@ Metrics computation automation
 
 
 import pickle
-from glob import glob
 import numpy as np
 from multiprocessing import Pool
 from collections import defaultdict
-
+import pandas as pd
+import copy
+import glob
 
 from score_ensemble.configurate_ens import Experiment
 import score_ensemble.evaluation_backend_ens as backend
@@ -26,10 +27,9 @@ import metrics4ensemble as metrics
 
 ########### standard parameters #####
 
-num_proc = backend.num_proc
 var_dict = backend.var_dict 
-data_dir_real = backend.data_dir_real
-data_dir_obs = backend.data_dir_obs
+#data_dir_real = backend.data_dir_real
+#data_dir_obs = backend.data_dir_obs
 
 #####################################
 
@@ -50,7 +50,8 @@ class EnsembleMetricsCalculator(Experiment) :
     
     
     def estimation(self, metrics_list, program, subsample=16, parallel=False, standalone=False,
-                   same=False, real=False, observation = False, parameters = None, N_runs=None, dh=None, debiasing = False) :
+                   same=False, real=False, observation = False, parameters = None, N_runs=None, dh=None, debiasing = False,
+                   num_proc=8, data_dir_real=None, data_dir_obs=None) :
         
         """
         
@@ -115,7 +116,59 @@ class EnsembleMetricsCalculator(Experiment) :
         self.N_runs = N_runs
         self.dh = dh
         self.debiasing = debiasing
+        self.num_proc = num_proc
+        self.data_dir_real = data_dir_real
+        self.data_dir_obs = data_dir_obs
         
+        
+        ################### SOME CUISINE TO GET DATE LIST AND OBSERVATION DATE LIST #########
+        df0 = pd.read_csv(self.data_dir_real + 'Large_lt_val_labels.csv')
+        
+        df1 = pd.read_csv(self.data_dir_real + 'Large_lt_val_labels.csv')
+        
+        List_dates_unique = df0["Date"].unique().tolist()
+        List_dates_inv = df1["Date"].unique().tolist()
+        
+        #List_dates_inv.remove('2021-10-29T21:00:00Z') #31.10.2021 obs missing
+        #List_dates_inv.remove('2021-10-30T21:00:00Z')
+        #List_dates_unique.remove('2021-10-29T21:00:00Z') #31.10.2021 obs missing
+        #List_dates_unique.remove('2021-10-30T21:00:00Z')
+        
+        List_dates_inv_org = copy.deepcopy(List_dates_inv)
+        #List_dates_unique.sort()
+        #List_dates_inv_org.sort()
+        #List_dates_inv.sort()
+        
+        for i in range(len(List_dates_unique)):
+            List_dates_unique[i]=List_dates_unique[i].replace("T21:00:00Z","")
+            List_dates_unique[i]=List_dates_unique[i].replace("-","")
+        
+        for i in range(len(List_dates_inv)):
+            List_dates_inv[i]=List_dates_inv[i].replace("T21:00:00Z","")
+            
+        ############### Putting all the available observation dates in a list
+        
+        fl_obs = glob.glob(data_dir_obs+"/obs*")
+        
+        len_fl_obs = len(fl_obs)
+        
+        for i in range(len_fl_obs):
+            fl_obs[i] = fl_obs[i].replace(data_dir_obs, "")
+            fl_obs[i] = fl_obs[i].replace(".npy", "")
+            fl_obs[i] = fl_obs[i].replace("obs", "")
+            
+            fl_obs[i] = fl_obs[i][0:8]
+            #print(fl_obs[i])
+        
+        fl_obs=list(set(fl_obs))
+        
+        fl_obs.sort()        
+        ################### SOME CUISINE TO GET DATE LIST AND OBSERVATION DATE LIST #########
+        
+        self.fl_obs = fl_obs
+        self.List_dates_inv = List_dates_inv
+        self.List_dates_inv_org = List_dates_inv_org
+        self.List_dates_unique = List_dates_unique
         print('Subsample', subsample)
         
         option = 'real' if real else 'fake'
@@ -177,7 +230,7 @@ class EnsembleMetricsCalculator(Experiment) :
 
 
         for i in range(len(metrics_list)):
-            np.save(dumpfile+'_'+metrics_list[i] + '.npy', results[0][metrics_list[i]])  
+            np.save(dumpfile+'_'+metrics_list[i] + '.npy', results[0][metrics_list[i]])  ### ATTENTION
 
         #print(dumpfile, metrics_list, results)
         #pickle.dump(results, open(dumpfile, 'wb'))
@@ -221,7 +274,7 @@ class EnsembleMetricsCalculator(Experiment) :
             
             dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program,  N_runs=self.N_runs, dh=self.dh)
             
-            dataset_r, _ = backend.build_datasets(data_dir_real, self.program,
+            dataset_r, _ = backend.build_datasets(self.data_dir_real, self.program,
                                                option = 'real',
                                                indexList = indexList,  N_runs=self.N_runs, dh=self.dh) # taking the 'same ensemble' for fake and real
             
@@ -242,7 +295,7 @@ class EnsembleMetricsCalculator(Experiment) :
                                   N_samples, N_samples,\
                                   self.VI, self.VI_f, self.CI, i0, subsample, self.parameters, self.N_runs, self.dh, self.debiasing))
 
-            with Pool(num_proc) as p :
+            with Pool(self.num_proc) as p :
                 res = p.map(backend.eval_distance_metrics, data_list)
                     
                 
@@ -301,14 +354,17 @@ class EnsembleMetricsCalculator(Experiment) :
             
             print('Step', step)
             
-            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program, N_runs=self.N_runs, dh=self.dh)
+            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program, N_runs=self.N_runs, dh=self.dh,
+                                                          data_dir_real=self.data_dir_real, List_dates_inv=self.List_dates_inv, List_dates_inv_org=self.List_dates_inv_org)
             
-            dataset_o, _ = backend.build_datasets(data_dir_obs, self.program,
+            dataset_o, _ = backend.build_datasets(self.data_dir_obs, self.program,
                                                option = 'observation',
-                                               indexList = indexList, N_runs=self.N_runs, dh=self.dh) # taking the 'same ensemble' for fake and real
-            dataset_r, _ = backend.build_datasets(data_dir_real, self.program,
+                                               indexList = indexList, N_runs=self.N_runs, dh=self.dh,
+                                               data_dir_real=self.data_dir_real, List_dates_inv=self.List_dates_inv, List_dates_inv_org=self.List_dates_inv_org) # taking the 'same ensemble' for fake and real
+            dataset_r, _ = backend.build_datasets(self.data_dir_real, self.program,
                                                option = 'real',
-                                               indexList = indexList, N_runs=self.N_runs, dh=self.dh) # taking the 'same ensemble' for fake and real
+                                               indexList = indexList, N_runs=self.N_runs, dh=self.dh,
+                                               data_dir_real=self.data_dir_real, List_dates_inv=self.List_dates_inv, List_dates_inv_org=self.List_dates_inv_org) # taking the 'same ensemble' for fake and real
             data_list = []
             for i0 in self.program.keys():
                 
@@ -323,7 +379,8 @@ class EnsembleMetricsCalculator(Experiment) :
               
                 data_list.append((metrics_list, {'obs': data_o,'fake': data_f,'real': data_r},\
                                   N_samples, N_samples,\
-                                  self.VI, self.VI_f, self.CI, i0, subsample, self.parameters, self.N_runs, self.dh, self.debiasing))
+                                  self.VI, self.VI_f, self.CI, i0, subsample, self.parameters, self.N_runs, self.dh, self.debiasing,
+                                  self.data_dir_real, self.data_dir_obs,self.List_dates_inv, self.List_dates_inv_org, self.List_dates_unique,self.fl_obs))
             #res = []
             #with Pool(num_proc) as p :
             #    res = p.map(backend.eval_distance_metrics, data_list)
@@ -387,11 +444,13 @@ class EnsembleMetricsCalculator(Experiment) :
             
             print('Step', step)
         
-            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program, N_runs=self.N_runs, dh=self.dh)
+            dataset_f, indexList = backend.build_datasets(self.data_dir_f, self.program, N_runs=self.N_runs, dh=self.dh,
+                                                          data_dir_real=self.data_dir_real, List_dates_inv=self.List_dates_inv, List_dates_inv_org=self.List_dates_inv_org)
             
-            dataset_r, _ = backend.build_datasets(data_dir_real, self.program,
+            dataset_r, _ = backend.build_datasets(self.data_dir_real, self.program,
                                                option = 'real',
-                                               indexList = indexList, N_runs=self.N_runs, dh=self.dh) # taking the 'same ensemble' for fake and real
+                                               indexList = indexList, N_runs=self.N_runs, dh=self.dh,
+                                               data_dir_real=self.data_dir_real, List_dates_inv=self.List_dates_inv, List_dates_inv_org=self.List_dates_inv_org) # taking the 'same ensemble' for fake and real
             
             res = []
             
@@ -408,7 +467,8 @@ class EnsembleMetricsCalculator(Experiment) :
                 
                 data = (metrics_list, {'real': data_r,'fake': data_f},\
                       N_samples, N_samples,
-                      self.VI, self.VI_f, self.CI, i0, subsample,  self.parameters, self.N_runs, self.dh, self.debiasing)
+                      self.VI, self.VI_f, self.CI, i0, subsample,  self.parameters, self.N_runs, self.dh, self.debiasing,
+                      self.data_dir_real, self.data_dir_obs,self.List_dates_inv, self.List_dates_inv_org, self.List_dates_unique,self.fl_obs)
        
                 res.append(backend.eval_distance_metrics(data))
           
@@ -461,7 +521,7 @@ class EnsembleMetricsCalculator(Experiment) :
         
         if option=='real' :
             
-            datasets = backend.build_datasets(data_dir_real, self.program)
+            datasets = backend.build_datasets(self.data_dir_real, self.program)
             data_list = []         
         
             #getting the two random datasets programs
@@ -475,7 +535,7 @@ class EnsembleMetricsCalculator(Experiment) :
                                   N_samples, N_samples,
                                   self.VI, self.VI, self.CI, i, subsample,  self.parameters, self.N_runs, self.dh, self.debiasing))
             
-            with Pool(num_proc) as p :
+            with Pool(self.num_proc) as p :
                 res = p.map(backend.eval_distance_metrics, data_list)
         
         elif option=='fake' :
@@ -494,7 +554,7 @@ class EnsembleMetricsCalculator(Experiment) :
                                   N_samples, N_samples,
                                   self.VI_f, self.VI_f, self.CI,i, subsample))
             
-            with Pool(num_proc) as p :
+            with Pool(self.num_proc) as p :
                 res = p.map(backend.eval_distance_metrics, data_list)
         ## some cuisine to produce a rightly formatted dictionary
             
@@ -547,7 +607,7 @@ class EnsembleMetricsCalculator(Experiment) :
         
         if option =='real':
         
-            datasets = backend.build_datasets(data_dir_real, self.program)
+            datasets = backend.build_datasets(self.data_dir_real, self.program)
                 
             for i in range(len(datasets)):
                 
@@ -618,13 +678,13 @@ class EnsembleMetricsCalculator(Experiment) :
         if option=='real':
             
             
-            dataset_r,_ = backend.build_datasets(data_dir_real, self.program, option = 'real')   
+            dataset_r,_ = backend.build_datasets(self.data_dir_real, self.program, option = 'real')   
             print(len(dataset_r))
             data_list = [(metrics_list, dataset_r, self.program[i][1], 
                           self.VI, self.VI, self.CI, i, option, subsample) \
                         for i, dataset in enumerate(dataset_r)]
             
-            with Pool(num_proc) as p :
+            with Pool(self.num_proc) as p :
                 res = p.map(backend.global_dataset_eval, data_list)
             
             ind_list=[]
@@ -664,7 +724,7 @@ class EnsembleMetricsCalculator(Experiment) :
                                           self.VI_f, self.VI_f, self.CI, step, option,
                                           subsample))
                     
-                with Pool(num_proc) as p :
+                with Pool(self.num_proc) as p :
                     res = p.map(backend.global_dataset_eval, data_list)
                     
                 ind_list=[]
