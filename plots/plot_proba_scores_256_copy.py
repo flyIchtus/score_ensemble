@@ -10,7 +10,6 @@ import os
 import matplotlib.gridspec as gridspec
 import gc
 
-mpl.rcParams['axes.linewidth'] = 2
 
 def plot_mean_var_1l(Ens_proj_var, ref, name):
     
@@ -140,25 +139,17 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     false_alarm[16]=1
 
     ############ RELATED TO ROC
-    
-
+        
+    #############################################################################################
     
     
     color_p = ['black', 'royalblue', 'darkgreen', 'darkorange', 'red', 'cyan', 'gold', 'pink', 'tan', 'slategray', 'purple', 'palegreen', 'orchid', 'crimson', 'firebrick']
-
-    #color_p = ['black', 'black', 'royalblue', 'royalblue', 'royalblue',  'darkgreen', 'darkgreen', 'darkgreen', 'darkorange', 'darkorange', 'red', 'red', 'red' ]
-    #color_p = ['black', 'royalblue', 'royalblue', 'royalblue',  'darkgreen', 'darkgreen', 'darkgreen', 'darkorange', 'darkorange', 'darkorange', 'red', 'red', 'red' ]
-
-    line = ['solid', 'dotted', 'solid', 'dotted', 'dashed', 'solid', 'dotted', 'dashed', 'solid', 'dotted', 'dashed', 'solid', 'dotted','solid', 'dotted', 'dashed', ]
-    line = ['solid', 'solid', 'dotted', 'dashed', 'solid', 'dotted', 'dashed', 'solid', 'dotted', 'dashed', 'solid', 'dotted', 'dashed', 'solid', 'dotted', 'dashed', ]
-    line = ['solid', 'solid', 'solid', 'solid', 'solid', 'solid', 'solid', 'solid','solid', 'solid', 'solid', 'solid', 'solid', 'solid', 'solid', 'solid',]
-
 
     case_name = [['ff=3 (m/s)', 'ff=4 (m/s)', 'ff=5 (m/s)', 'ff=6 (m/s)', 'ff=7 (m/s)', 'ff=8 (m/s)'],
                  ['', '', '', '', '', ''], 
                  ['t2m=278.15 (K)', 't2m=281.15 (K)', 't2m=283.15 (K)', 't2m=285.15 (K)', 't2m=287.15 (K)', 't2m=289.15 (K)']]
 
-    case_name = [['ff=5 (km/h)', 'ff=10 (km/h)', 'ff=15 (km/h)', 'ff=20 (km/h)', 'ff=30 (km/h)', 'ff=40 (km/h)'],
+    case_name = [['ff=5 (m/s)', 'ff=7.5 (m/s)', 'ff=10 (m/s)', 'ff=12.5 (m/s)', 'ff=15 (m/s)', 'ff=17.5 (m/s)'],
                  ['', '', '', '', '', ''], 
                  ['t2m=278.15 (K)', 't2m=283.15 (K)', 't2m=288.15 (K)', 't2m=293.15 (K)', 't2m=298.15 (K)', 't2m=303.15 (K)']]
 
@@ -202,287 +193,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     #cases_clean = ['AROME', 'from_z', 's_w_p_f']
     #cases_clean = ['AROME', '1000', '200', '300_N', '300_Z', '300_R']
     cases_clean = ['AROME','Random_o', 'PCA_f', 'PCA_o']
-    cases_clean = ['AROME','PCA_full', 'CRPS_8_1', 'CRPS_8_2', 'CRPS_8_3', 'SP-SK_8_1', 'SP-SK_8_2', 'SP-SK_8_3', 'CRPS_14_1', 'CRPS_14_2', 'SP-SK_14_1', 'SP-SK_14_2', 'SP-SK_14_3']
-    cases_clean = ['AROME','CRPS_8_1', 'CRPS_8_2', 'CRPS_8_3', 'SP-SK_8_1', 'SP-SK_8_2', 'SP-SK_8_3', 'CRPS_14_1', 'CRPS_14_2', 'CRPS_14_3', 'SP-SK_14_1', 'SP-SK_14_2', 'SP-SK_14_3']
-    cases_clean = ['AROME','R_SP-SK_14_1', 'R_SP-SK_14_2', 'PCA_FULL', 'PCA_CRPS_14_2']
-
-
-    echeance = ['+3H', '', '+9H', '', '+15H', '', '+21H', '', '+27H', '', '+33H', '', '+39H', '', '+45H', '', '+48H', '', '']
-
-
-    mean_bias = np.zeros((len_tests, N_e, n_c, size_x, size_x), dtype = ('float32'))
-    mean_bias_LT = np.zeros((len_tests, n_D, n_LT, n_c, size_x, size_x), dtype = ('float32'))
-
-    for i in range(len_tests):
-        
-
-        mean_bias[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_bias_ensemble.npy')
-
-    D_i = 0
-    LT_i = 0
-    for i in range(N_e-2):        
-        
-        mean_bias_LT[:,D_i, LT_i] = mean_bias[:,i]
-        LT_i =LT_i + 1
-        
-        if LT_i == n_LT : 
-            
-            D_i = D_i +1
-            LT_i = 0
-        
-################################################ MEAN BIAS    
-    for i in range(n_c):
-        
-
-        fig,axs = plt.subplots(figsize = (9,7))
-        
-        for k in range(len_tests):
-                
-            print(mean_bias_LT[k,:,:,i].shape, )
-            
-            plt.plot(np.nanmean(mean_bias_LT[k,:,:,i], axis = (0,2,3)), label = cases_clean[k], color= color_p[k], linestyle = line[k] )
-            
-            axs.set_xticks(range(len(echeance)))
-            axs.set_xticklabels(echeance)
-            plt.xticks( fontsize ='18')
-            axs.tick_params(direction='in', length=12, width=1)
-
-            plt.yticks(fontsize ='18')
-            #plt.title(var_names[i] ,fontdict = font)
-            #plt.text(0.6, 0.9, var_names[i] + ' ' + domain[ii],
-              #        fontdict = font, transform=axs.transAxes)
-            plt.ylabel(var_names_m[i], fontsize= '18')
-            plt.legend(fontsize = 10, ncol=1, frameon = False, loc='lower right')
-            plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/mean_bias/mean_bias'+str(i)+'.png')
-        
-
-
-
-
-    
-    mean_bias_LT=0
-    mean_bias=0
-    print(mean_bias_LT, mean_bias)
-    gc.collect()
-
-    
-################################################################# PLOT RANK HISTOGRAM
-
-    rank_histo = np.zeros((len_tests, N_e, n_c, N_bins_max))
-
-
-    for i in range(len_tests):
-
-        rank_histo[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_rank_histogram.npy')
-
-
-    N_bins= [17,113,113, 113, 113]
-    
-
-    for j in range(n_c):
-        for k in range(len_tests):
-            fig,axs = plt.subplots(figsize = (9,7))
-            ind = np.arange(N_bins[k])
-            print(rank_histo[k,:,j,0:N_bins[k]].sum(axis=0).shape)
-            plt.bar(ind, rank_histo[k,:,j,0:N_bins[k]].sum(axis=0))
-            plt.title(cases_clean[k] + ' ' + var_names[j],fontdict = font)
-            #plt.xticks( fontsize ='18')
-            plt.tick_params(bottom = False, labelbottom = False)
-            plt.xlabel('Bins', fontsize= '18')
-            plt.ylabel('Number of Observations', fontsize= '18')
-            axs.tick_params(length=12, width=1)
-            plt.yticks(fontsize ='18')
-
-            plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/rank_histo/rank_histo'+str(j)+'_'+str(k)+'.png')
-
-        #plt.xticks( fontsize ='18')
-        #plt.xlabel('forecast probability', fontsize= '18')
-        #plt.ylabel('observation frequency', fontsize= '18')
-        #axs.tick_params(direction='in', length=12, width=2)
-        #plt.yticks(fontsize ='18')
-        #plt.text(0.3, 0.9, case_name[j][i],
-        #         fontdict = font, transform=axs.transAxes)
-        #plt.legend(fontsize = 14,frameon = False, ncol=2)
-        
-
-
-    rank_histo=0
-    gc.collect()
-
-
-
-    
-#####################################################"PLOT REL DIAGRAM
-    
-
-    rel_diag_scores = np.zeros((len_tests,N_e, 6, 2, n_c, size_x, size_x))
-    for i in range(len_tests):
-        
-        rel_diag_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_rel_diagram.npy')
-
-
-
-    for i in range(6):
-        
-        for j in range(n_c):
-            fig,axs = plt.subplots(figsize = (9,7))
-            for k in range(len_tests):
-                O_tr = rel_diag_scores[k,:-2,i,1,j]
-                X_prob = rel_diag_scores[k,:-2,i,0,j]
-                #print(O_tr.shape, X_prob.shape,)
-                
-                for z in range(bins.shape[0]-1):
-                    
-                    obs = copy.deepcopy(O_tr[np.where((X_prob >= bins[z]) & (X_prob < bins[z+1]), True, False)])
-                    obs = obs[~np.isnan(obs)]
-                    print(obs.shape, j)
-                    freq_obs[z] = obs.sum()/obs.shape[0]
-                plt.plot(bins[:-1]+0.05, freq_obs, label = cases_clean[k], color = color_p[k], linestyle = line[k])
-                    
-            plt.plot(bins[:-1]+0.05, bins[:-1]+0.05, label = 'perfect', color = 'black', linewidth =3 )
-            #plt.ylim([-0.15, 0.15])
-            plt.xticks( fontsize ='18')
-            plt.xlabel('forecast probability', fontsize= '18')
-            plt.ylabel('observation frequency', fontsize= '18')
-            axs.tick_params(direction='in', length=12, width=1)
-            plt.yticks(fontsize ='18')
-            plt.title(case_name[j][i],fontdict = font)
-            #plt.text(0.3, 0.9, case_name[j][i],
-            #         fontdict = font, transform=axs.transAxes)
-            plt.legend(fontsize = 10, ncol=1, frameon = False, loc='lower right')
-            plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/rel_diag/rel_diag'+str(i)+'_'+str(j)+'.png')
-            
-    
-    rel_diag_scores=0
-    gc.collect()
-
-
-#############################################"" PLOT CRPS####################################
-    crps_scores = np.zeros((len_tests, N_e, n_c), dtype = ('float32'))
-    crps_scores_LT = np.zeros((len_tests, n_D, n_LT, n_c), dtype = ('float32'))
-    
-    for i in range(len_tests):
-
-        crps = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_ensemble_crps.npy')
-        print(crps.shape)
-        crps_scores[i] = crps[:,:,0]
-
-    D_i = 0
-    LT_i = 0
-    for i in range(N_e-2):        
-        
-
-        crps_scores_LT[:, D_i, LT_i] = crps_scores[:,i]
-        LT_i =LT_i + 1
-        if LT_i == n_LT : 
-            
-            D_i = D_i +1
-            LT_i = 0
-
-    for i in range(n_c):
-        
-        dist_0 = crps_scores_LT[0,:,0:5,i]
-        dist_0 = dist_0.reshape(n_D*5)
-        fig,axs = plt.subplots(figsize = (9,7))        
-        for k in range(len_tests-1):
-
-            dist = crps_scores_LT[k+1,:,0:5,i]
-            dist = dist.reshape(n_D*5)
-            axs.hist(dist-dist_0, bins=50)
-            plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/crps/crps_diff_histo_'+str(i)+'_'+str(k) +'.png')
-            
-    
-        # We can set the number of bins with the *bins* keyword argument.
-        
-
-
-    for i in range(n_c):
-        
-        #for ii in range(3):
-        #    if ii == 0:
-        #        indices = sea_indices
-        #    elif ii == 1:
-        #        indices = plain_indices
-        #    elif ii == 2:
-        #        indices = mountain_indices
-            fig,axs = plt.subplots(figsize = (9,7))
-            x = np.arange(8)
-            for k in range(len_tests):                      
-
-                plt.plot(np.nanmean(crps_scores_LT[k,:,:,i], axis=(0)), label=cases_clean[k], color=color_p[k], linestyle = line[k] )
-
-                std = np.nanstd(crps_scores_LT[k,:,:,i], axis=(0))
-                #plt.errorbar(x,np.nanmean(crps_scores_LT[k,:,:,i], axis=(0)), yerr = std, label=cases_clean[k], color=color_p[k] )
-                #plt.plot(np.nanmean(crps_scores_LT[k,:,:,i], axis=(0,2,3)), label=cases_clean[k], color=color_p[k] )
-            
-            plt.xticks( fontsize ='18')
-            axs.set_xticks(range(len(echeance)))
-            axs.set_xticklabels(echeance)
-            axs.tick_params(direction='in', length=12, width=1)
-            plt.yticks(fontsize ='18')
-            plt.ylabel(var_names_m[i], fontsize= '18', fontdict=font)
-            #plt.title(var_names[i] + ' ' + domain[ii],fontdict = font)
-            #plt.title(var_names[i] ,fontdict = font)                
-            #plt.text(0.6, 0.9, var_names[i] + ' ' + domain[ii],
-            #        fontdict = font, transform=axs.transAxes)
-            plt.legend(fontsize = 10, ncol=1, frameon = False, loc='lower right')
-            plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/crps/crps'+str(i) +'.pdf')
-            
-    crps_scores=0
-    crps_scores_LT=0
-    gc.collect()
-
-#################################################### SP
-    s_p_scores = np.zeros((len_tests, N_e, 2, n_c, size_x, size_x), dtype = ('float32'))
-    s_p_scores_LT = np.zeros((len_tests, n_D, n_LT, 2, n_c, size_x, size_x), dtype = ('float32'))
-
-    for i in range(len_tests):
-        s_p_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_skill_spread.npy')
-
-    D_i = 0
-    LT_i = 0
-    for i in range(N_e-2):        
-        
-        s_p_scores_LT[:, D_i, LT_i] = s_p_scores[:,i]
-        LT_i =LT_i + 1
-        if LT_i == n_LT : 
-            D_i = D_i +1
-            LT_i = 0
-        
-        
-    for i in range(n_c):
-        
-
-            fig,axs = plt.subplots(figsize = (9,7))
-            
-            for k in range(len_tests):
-                    
-                if k == 0 :    
-                    plt.plot(np.sqrt(np.nanmean(s_p_scores_LT[k,:,:,0,i]**2., axis =(0,2,3))), label = 'SKILL AROME', color= color_p[k], linewidth =3 )
-                
-            
-                plt.plot(np.nanmean(np.sqrt(np.nanmean(s_p_scores_LT[k,:,:,1,i], axis =(0))), axis=(-2,-1)), label = cases_clean[k], color= color_p[k], linestyle = line[k] )
-
-
-                plt.xticks( fontsize ='18')
-                axs.set_xticks(range(len(echeance)))
-                axs.set_xticklabels(echeance)
-                axs.tick_params(direction='in', length=12, width= 1)
-                plt.yticks(fontsize ='18')
-                plt.ylabel(var_names_m[i], fontsize= '18', fontdict=font)
-                #plt.title(var_names[i] + ' ' + domain[ii],fontdict = font)
-                #plt.title(var_names[i],fontdict = font)
-                #plt.text(0.6, 0.9, var_names[i] + ' ' + domain[ii],
-                  #        fontdict = font, transform=axs.transAxes)
-                plt.legend(fontsize = 10, ncol=1, frameon = False, loc='lower right')
-                plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/skill_spread/skill_spread'+str(i) +'.pdf')
-                
-
-
-    s_p_scores=0
-    s_p_scores_LT=0
-    gc.collect()
-
+    echeance = ['+3H', '', '+9H', '', '+15H', '', '+21H', '', '+27H', '', '+33H', '', '+39H', '', '+45H']
 
 ################################################"" BRIER
 
@@ -492,14 +203,14 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     for i in range(len_tests):
 
         Brier_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_brier_score.npy')
-        
+        print(np.nanmean(Brier_scores[i]))
+ 
     D_i = 0
     LT_i = 0
     for i in range(N_e-2):        
         
         Brier_scores_LT[:,D_i, LT_i] = Brier_scores [:, i]
-        LT_i =LT_i + 1
- 
+        
         if LT_i == n_LT : 
             
             D_i = D_i +1
@@ -512,11 +223,17 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
             for k in range(len_tests):
             
                 #plt.plot(1-np.nanmean(Brier_scores_LT[k,:,:,i, j], axis= (0,2,3))/np.nanmean(Brier_scores_LT[0,:,:,i, j], axis= (0,2,3)), label = cases_clean[k], color = color_p[k])
+                plt.plot(np.nanmean(Brier_scores_LT[0,:,:,i, j], axis= (0,2,3))-np.nanmean(Brier_scores_LT[k,:,:,i, j], axis= (0,2,3)), label = cases_clean[k], color = color_p[k])
                 
-
-                plt.plot(np.nanmean(Brier_scores_LT[0,:,:,i, j], axis= (0,2,3))-np.nanmean(Brier_scores_LT[k,:,:,i, j], axis= (0,2,3)), label = cases_clean[k], color = color_p[k], linestyle = line[k])
+                # Brier_s = np.nanmean(Brier_scores_LT[0,:,0,i, j], axis= (1,2))-np.nanmean(Brier_scores_LT[k,:,0,i, j], axis= (1,2))
+                # counter=0
+                # for ii in range(74):
+                #     if Brier_s[ii]<0:
+                        
+                #         counter = counter+1
                 
- 
+                # print('Test is ' ,k, 'variable is',  j, 'threshold is', i, 'counter is', counter)
+                        
             #plt.ylim([-0.15, 0.15])
             plt.xticks( fontsize ='18')
             axs.tick_params(direction='in', length=12, width=2)
@@ -524,8 +241,8 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
             plt.title(case_name[j][i],fontdict = font)
             #plt.text(0.3, 0.9, case_name[j][i],
             #         fontdict = font, transform=axs.transAxes)
-            plt.legend(fontsize = 10, ncol=1, frameon = False, loc='lower right')
-            plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/brier/brier'+str(i)+'_'+str(j)+'.pdf')
+            plt.legend(fontsize = 14,frameon = False, ncol=2)
+            plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/brier/brier'+str(i)+'_'+str(j)+'.png')
             
     Brier_scores=0
     Brier_scores_LT=0
@@ -539,6 +256,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
 
 
 
+    #bins_roc = np.array([0.01, 0.07, 0.14, 0.23, 0.3, 0.37, 0.44, 0.51, 0.58, 0.65, 0.72, 0.79, 0.86, 0.93, 0.99])
     bins_roc = np.array([0.99, 0.93, 0.86, 0.79, 0.72, 0.65, 0.58, 0.51, 0.44, 0.37, 0.3, 0.23, 0.14, 0.07, 0.01])
     for i in range(6):
 
@@ -573,10 +291,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
                     
                 #print(np.trapz(Hit_rate, false_alarm))
                     #freq_obs[z] = obs.sum()/obs.shape[0]
-                    
-
-                plt.plot(false_alarm, Hit_rate, label = cases_clean[k], color = color_p[k], linestyle = line[k])
- 
+                plt.plot(false_alarm, Hit_rate, label = cases_clean[k], color = color_p[k])
                 A_ROC[k] = np.trapz(Hit_rate, false_alarm)
                     
                 A_ROC_skill[k]=1-A_ROC[0]/A_ROC[k]
@@ -682,24 +397,24 @@ tests_list = ['REAL_256',"random_['0', '1', '14', '14']", "random_['1', '2', '14
 #              "random_['4', '5', '14', '14']", "random_['5', '6', '14', '14']", "random_['6', '7', '14', '14']"]
 
 
-# tests_list = ["REAL_256", "normal_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1']", "normal_['1', '1', '0', '1', '1', '1', '0', '1', '0', '0', '0', '0', '0', '0']",
-# "normal_['1', '1', '1', '1', '1', '0', '0', '1', '0', '0', '0', '0', '0', '0']","normal_['1', '1', '1', '1', '0', '1', '1', '1', '0', '0', '0', '0', '0', '0']",
-# "normal_['1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0']", "normal_['1', '1', '1', '1', '1', '1', '0', '1', '0', '0', '0', '0', '0', '0']",
-# "normal_['1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0']", "normal_['1', '1', '1', '0', '1', '1', '1', '1', '0', '0', '1', '1', '1', '0']",
-# "normal_['1', '1', '1', '1', '0', '0', '1', '1', '1', '0', '1', '1', '0', '1']", "normal_['1', '1', '1', '1', '1', '0', '1', '1', '0', '1', '1', '1', '1', '0']",
-# "normal_['1', '1', '1', '1', '1', '1', '0', '0', '1', '1', '1', '1', '1', '0']", "normal_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '1', '1']"
-#  ]
+tests_list = ["REAL_256", "normal_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1']", "normal_['1', '1', '0', '1', '1', '1', '0', '1', '0', '0', '0', '0', '0', '0']",
+"normal_['1', '1', '1', '1', '1', '0', '0', '1', '0', '0', '0', '0', '0', '0']","normal_['1', '1', '1', '1', '0', '1', '1', '1', '0', '0', '0', '0', '0', '0']",
+"normal_['1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0']", "normal_['1', '1', '1', '1', '1', '1', '0', '1', '0', '0', '0', '0', '0', '0']",
+"normal_['1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0']", "normal_['1', '1', '1', '0', '1', '1', '1', '1', '0', '0', '1', '1', '1', '0']",
+"normal_['1', '1', '1', '1', '0', '0', '1', '1', '1', '0', '1', '1', '0', '1']", "normal_['1', '1', '1', '1', '1', '0', '1', '1', '0', '1', '1', '1', '1', '0']",
+"normal_['1', '1', '1', '1', '1', '1', '0', '0', '1', '1', '1', '1', '1', '0']", "normal_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '1', '1']"
+ ]
 
-# tests_list = ["REAL_256", "random_['0', '0', '1', '0', '0', '0', '1', '1', '0', '0', '0', '0', '0', '0']", "random_['0', '0', '0', '0', '1', '0', '1', '0', '0', '0', '0', '0', '0', '0']",
-# "random_['0', '0', '1', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0', '0']", "random_['0', '0', '1', '1', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0']",
-# "random_['0', '0', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0']", "random_['0', '1', '0', '1', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0']",
-# "random_['0', '0', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1']", "random_['1', '0', '0', '0', '0', '0', '1', '0', '1', '0', '0', '0', '1', '1']",
-# "random_['0', '1', '0', '0', '0', '0', '0', '1', '1', '0', '0', '0', '0', '0']", "random_['0', '0', '0', '1', '0', '0', '0', '1', '1', '0', '1', '1', '0', '1']",
-# "random_['1', '0', '0', '0', '0', '0', '1', '0', '1', '0', '1', '1', '0', '1']", "random_['0', '1', '1', '1', '1', '0', '0', '0', '0', '0', '1', '0', '1', '1']"
-#   ]
+tests_list = ["REAL_256", "random_['0', '0', '1', '0', '0', '0', '1', '1', '0', '0', '0', '0', '0', '0']", "random_['0', '0', '0', '0', '1', '0', '1', '0', '0', '0', '0', '0', '0', '0']",
+"random_['0', '0', '1', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0', '0']", "random_['0', '0', '1', '1', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0']",
+"random_['0', '0', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0']", "random_['0', '1', '0', '1', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0']",
+"random_['0', '0', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1']", "random_['1', '0', '0', '0', '0', '0', '1', '0', '1', '0', '0', '0', '1', '1']",
+"random_['0', '1', '0', '0', '0', '0', '0', '1', '1', '0', '0', '0', '0', '0']", "random_['0', '0', '0', '1', '0', '0', '0', '1', '1', '0', '1', '1', '0', '1']",
+"random_['1', '0', '0', '0', '0', '0', '1', '0', '1', '0', '1', '1', '0', '1']", "random_['0', '1', '1', '1', '1', '0', '0', '0', '0', '0', '1', '0', '1', '1']"
+ ]
 
-tests_list = ["REAL_256", "random_['1', '0', '0', '0', '0', '0', '1', '0', '1', '0', '1', '1', '0', '1']", "random_['0', '0', '0', '1', '0', '0', '0', '1', '1', '0', '1', '1', '0', '1']",
-               "normal_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1']", "normal_['1', '1', '1', '1', '0', '0', '1', '1', '1', '0', '1', '1', '0', '1']" ]
+tests_list = ["REAL_256", "random_['1', '0', '0', '0', '0', '0', '1', '0', '1', '0', '1', '1', '0', '1']",
+              "normal_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1']", "normal_['1', '1', '1', '1', '0', '0', '1', '1', '1', '0', '1', '1', '0', '1']"]
               
 
 

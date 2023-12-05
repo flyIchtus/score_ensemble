@@ -13,10 +13,10 @@ from score_ensemble.configurate_ens import getAndNameDirs, select_Config
 import numpy as np
 
 
-original_data_dir='/scratch/work/moldovang/'
+original_data_dir='/scratch/mrmn/moldovang/'
 
 
-root_expe_path = '/scratch/work/moldovang/tests_CGAN/'
+root_expe_path = '/scratch/mrmn/moldovang/tests_CGAN/'
     
 if __name__=="__main__":
     
@@ -24,7 +24,7 @@ if __name__=="__main__":
     
     configuration_set=getAndNameDirs(root_expe_path)
     print(configuration_set)
-    N_samples = 1260
+    N_samples = 2235
 
     N_runs = 15
     dh = 3 # echeance
@@ -37,7 +37,7 @@ if __name__=="__main__":
     standalone_metrics_list = ["quantiles"]#, "variance"]
     
     parameters = np.zeros((2,6))
-    parameters[0] = [5., 7.5, 10., 12.5, 15., 17.5] #treshold for brier scores for wind module
+    parameters[0] = [1.39, 2.78, 4.17, 5.56, 8.33, 11.11] #treshold for brier scores for wind module
     parameters[1] = [278.15, 283.15, 288.15, 293.15, 297.15, 303.15] #treshold for brier scores for temperature
     #parameters[0] = [3., 4., 5., 6., 7., 8] #treshold for brier scores for wind module
     #parameters[1] = [278.15, 281.15, 283.15, 285.15, 287.15, 289.15] #treshold for brier scores for temperature

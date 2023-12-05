@@ -94,8 +94,8 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     for i in range(len_tests):
         
 
-        bias_load = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_bias.npy')
-        mse_load = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_mse.npy')
+        bias_load = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2265_bias.npy')
+        mse_load = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2265_mse.npy')
 
         bias[i] = bias_load
         mse[i] = mse_load
@@ -143,12 +143,12 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     os.mkdir('mse')
     os.mkdir('bias')
     
-    PATH_SAVE = '/home/gmap/mrmn/moldovang/score_ensemble/plots/'
+    PATH_SAVE = '/home/mrmn/moldovang/score_ensemble/plots/'
     var_names = ['ff', 'dd', 't2m']
     var_names_m = ['ff (m/s)', 'dd (°)', 't2m (K)'  ]
     domain = ['sea', 'plain', 'mountain']
 
-    cases_clean = ['200', '400', '600', '800', '1000']
+    cases_clean = ['AROME','200', '400', '600', '800', '1000']
 
     #cases_clean = ['AROME', 'from_z', 's_w_p_f']
     #cases_clean = ['AROME', '1000', '200', '300_N', '300_Z', '300_R']
@@ -216,8 +216,8 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     
 
 
-Path_to_q = '/scratch/work/moldovang/tests_CGAN/'
-tests_list = ['INV_200_TEST', 'INV_400_TEST', 'INV_600_TEST', 'INV_800_TEST', 'INV_1000_TEST']
+Path_to_q = '/scratch/mrmn/moldovang/tests_CGAN/'
+tests_list = ['REAL_256', 'INVERSION_200', 'INVERSION_400', 'INVERSION_600', 'INVERSION_800', 'INVERSION_1000']
 
 
-plots_ens(tests_list, Path_to_q, 7, 2237, 3, 256, 15, 149)
+plots_ens(tests_list, Path_to_q, 7, 2267, 3, 256, 15, 151)

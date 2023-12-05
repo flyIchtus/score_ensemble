@@ -95,6 +95,8 @@ def brier_score(cond, X,real_ens, parameters, debiasing = False ):
         O_brier[2, cond[2] < T_brier] = 0
         
         brier[i] = ps.brier_score(O_brier, X_brier_prob)
+        print(np.nanmean(brier[i]))
+
         #if (i == 1):
             #for k in range(H):
         
