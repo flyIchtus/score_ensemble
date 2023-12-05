@@ -122,17 +122,17 @@ class EnsembleMetricsCalculator(Experiment) :
         
         
         ################### SOME CUISINE TO GET DATE LIST AND OBSERVATION DATE LIST #########
-        df0 = pd.read_csv(self.data_dir_real + 'Large_lt_val_labels.csv')
+        df0 = pd.read_csv(self.data_dir_real + 'Large_lt_test_labels.csv')
         
-        df1 = pd.read_csv(self.data_dir_real + 'Large_lt_val_labels.csv')
+        df1 = pd.read_csv(self.data_dir_real + 'Large_lt_test_labels.csv')
         
         List_dates_unique = df0["Date"].unique().tolist()
         List_dates_inv = df1["Date"].unique().tolist()
         
-        #List_dates_inv.remove('2021-10-29T21:00:00Z') #31.10.2021 obs missing
-        #List_dates_inv.remove('2021-10-30T21:00:00Z')
-        #List_dates_unique.remove('2021-10-29T21:00:00Z') #31.10.2021 obs missing
-        #List_dates_unique.remove('2021-10-30T21:00:00Z')
+        List_dates_inv.remove('2021-10-29T21:00:00Z') #31.10.2021 obs missing
+        List_dates_inv.remove('2021-10-30T21:00:00Z')
+        List_dates_unique.remove('2021-10-29T21:00:00Z') #31.10.2021 obs missing
+        List_dates_unique.remove('2021-10-30T21:00:00Z')
         
         List_dates_inv_org = copy.deepcopy(List_dates_inv)
         #List_dates_unique.sort()
@@ -161,8 +161,12 @@ class EnsembleMetricsCalculator(Experiment) :
             #print(fl_obs[i])
         
         fl_obs=list(set(fl_obs))
+        fl_obs.append('20211031') ########## ATTENTION ARTIFICIALLY ADDING THIS DATES BECAUSE IT DOES NOT EXIST IN THE DB        
+
         
-        fl_obs.sort()        
+        fl_obs.sort()
+
+
         ################### SOME CUISINE TO GET DATE LIST AND OBSERVATION DATE LIST #########
         
         self.fl_obs = fl_obs

@@ -192,7 +192,7 @@ def build_datasets(data_dir, program, option='fake', indexList=None,
         specified in the "program" items. Can be nested.
     
     """
-    df = pd.read_csv(data_dir_real + 'Large_lt_val_labels.csv')    
+    df = pd.read_csv(data_dir_real + 'Large_lt_test_labels.csv')    
     res = {}
     
     for key, value in program.items():
@@ -222,9 +222,9 @@ def build_datasets(data_dir, program, option='fake', indexList=None,
             
             elif option=='fake' and data_option=='ens':
                 
-                #fileList = [data_dir + 'Rsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'.npy' for ind in indices ]
-                #fileList = [data_dir + 'invertFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_800'+'.npy' for ind in indices ]
-                fileList = [data_dir + 'genFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_1000'+'.npy' for ind in indices ]
+                fileList = [data_dir + 'Rsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'.npy' for ind in indices ]
+                #fileList = [data_dir + 'invertFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_1000'+'.npy' for ind in indices ]
+                #fileList = [data_dir + 'genFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_1000'+'.npy' for ind in indices ]
             
             
             elif option=='fake' and data_option=='sample' :
@@ -446,7 +446,7 @@ def load_batch(file_list, number,\
     elif option=='obs':
         
         # in this case samples are stored once per file
-        
+
         Shape=(len(var_indices_real),
                crop_indices[1]-crop_indices[0],
                crop_indices[3]-crop_indices[2])
@@ -456,7 +456,6 @@ def load_batch(file_list, number,\
         
         k = 0
         
-        
         for k in range(number):
             
             D_index = k//int(N_runs)
@@ -465,6 +464,8 @@ def load_batch(file_list, number,\
             print(N_runs, D_index, LT_index, dh)
             
             hour_LT = (LT_index)*dh
+            
+            
             if hour_LT > 23 :
                 
                 hour = (LT_index)*dh - 24
@@ -601,6 +602,17 @@ def eval_distance_metrics(data):
                List_dates_unique=List_dates_unique, data_dir_obs=data_dir_obs)
         
         real_data = real_data.astype(np.float32)
+        
+        std_by_station = np.nanstd(real_data, axis=(0), ddof = 1)
+        std = np.nanmean(std_by_station, axis=(1,2))
+        mean = np.nanmean(real_data, axis=(0,2,3))
+        
+        quantiles = [0.1, 0.25, 0.5, 0.75, 0.9]
+        q_obs_by_station = np.nanquantile(real_data, quantiles, axis = (0))
+        q_obs = np.nanmean(q_obs_by_station, axis=(2,3) )
+        print(q_obs_by_station.shape)
+        print(mean, std, q_obs)
+        #print(stoppp)
         #real_data = normalize(real_data, 0.95, Means, Maxs)
         
         print(real_data.shape, fake_data.shape)
