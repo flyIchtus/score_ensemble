@@ -24,7 +24,7 @@ if __name__=="__main__":
     
     configuration_set=getAndNameDirs(root_expe_path)
     print(configuration_set)
-    N_samples = 2235
+    N_samples = 15
 
     N_runs = 15
     dh = 3 # echeance
