@@ -411,7 +411,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
 
                 plt.plot(np.nanmean(crps_scores_LT[k,:,:,i], axis=(0)), label=cases_clean[k], color=color_p[k], linestyle = line[k] )
 
-                std = np.nanstd(crps_scores_LT[k,:,:,i], axis=(0))
+                #std = np.nanstd(crps_scores_LT[k,:,:,i], axis=(0))
                 #plt.errorbar(x,np.nanmean(crps_scores_LT[k,:,:,i], axis=(0)), yerr = std, label=cases_clean[k], color=color_p[k] )
                 #plt.plot(np.nanmean(crps_scores_LT[k,:,:,i], axis=(0,2,3)), label=cases_clean[k], color=color_p[k] )
             

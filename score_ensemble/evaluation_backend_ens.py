@@ -222,9 +222,9 @@ def build_datasets(data_dir, program, option='fake', indexList=None,
             
             elif option=='fake' and data_option=='ens':
                 
-                fileList = [data_dir + 'Rsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'.npy' for ind in indices ]
+                #fileList = [data_dir + 'Rsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'.npy' for ind in indices ]
                 #fileList = [data_dir + 'invertFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_1000'+'.npy' for ind in indices ]
-                #fileList = [data_dir + 'genFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_1000'+'.npy' for ind in indices ]
+                fileList = [data_dir + 'genFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_1000'+'.npy' for ind in indices ]
             
             
             elif option=='fake' and data_option=='sample' :
@@ -272,6 +272,7 @@ def build_datasets(data_dir, program, option='fake', indexList=None,
             res[key] = split_dataset(fileList,2)
     print(indexList)
     print('built datasets', option)
+    print('Here are all the files that are read', fileList)
     print(res[key][0])
     #print(res[key])
     
@@ -483,6 +484,7 @@ def load_batch(file_list, number,\
             obs = oc.obs_clean(obs, crop_indices)
             
             Mat[k] = obs
+            print("OBS TO GET", fl_obs[fl_obs.index(List_dates_unique[D_index])+2], fl_obs[fl_obs.index(List_dates_unique[D_index])+1])
     
 
 
