@@ -10,7 +10,7 @@ import numpy as np
 import metrics4ensemble.wind_comp as wc
 import copy
 
-def brier_score(cond, X,real_ens, parameters, debiasing = False ):
+def brier_score(cond, X,real_ens, parameters, debiasing = False, conditioning_members=None ):
     """
     
     Inputs :
@@ -54,9 +54,10 @@ def brier_score(cond, X,real_ens, parameters, debiasing = False ):
     
     #print(Bias.shape, real_ens_p_mean.shape, real_ens_p.shape, X_p_mean.shape)
     #X_p = X_p + Bias
-    if debiasing == True : 
 
-        X_p = wc.debiasing(X_p, real_ens_p)
+    if debiasing != 'None' : 
+
+        X_p = wc.debiasing(X_p, real_ens_p, conditioning_members, mode=debiasing)
     #N_a=int(X_p.shape[0]/real_ens_p.shape[0])
     #for i in range(int(real_ens_p.shape[0])):
         
@@ -95,6 +96,8 @@ def brier_score(cond, X,real_ens, parameters, debiasing = False ):
         O_brier[2, cond[2] < T_brier] = 0
         
         brier[i] = ps.brier_score(O_brier, X_brier_prob)
+        
+
         #print(np.nanmean(brier[i]))
 
         #if (i == 1):

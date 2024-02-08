@@ -119,7 +119,7 @@ def match_ensemble_to_samples(indices, df, data_dir, mode = 'Ens2Samples', List_
             ind_i = (int(ind[0]), int(ind[1])) 
             names = df[(df['Date']==List_dates_inv_org[ind_i[0]]) & (df['LeadTime']==(ind[1]+1)*3-1)]['Name'].to_list()
             file_names.append([data_dir + n + '.npy' for n in names])
-            
+
             
     
     if mode=='Sample2Ens' :
@@ -165,7 +165,7 @@ def normalize(BigMat, scale, Mean, Max):
 
 def build_datasets(data_dir, program, option='fake', indexList=None,
                    data_option='ens', dh = None, N_runs = None, List_dates_inv=None, data_dir_real=None,
-                   List_dates_inv_org=None):
+                   List_dates_inv_org=None, inv_step = None, conditioning_members=None, N_ensemble=None):
     """
     
     Build file lists to get samples, as specified in the program dictionary
@@ -223,9 +223,12 @@ def build_datasets(data_dir, program, option='fake', indexList=None,
             elif option=='fake' and data_option=='ens':
                 
                 #fileList = [data_dir + 'Rsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'.npy' for ind in indices ]
+                #fileList = [data_dir + 'invertFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3) + '_' + str(inv_step) +'.npy' for ind in indices ]
+
                 #fileList = [data_dir + 'invertFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_1000'+'.npy' for ind in indices ]
-                fileList = [data_dir + 'genFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_1000'+'.npy' for ind in indices ]
-            
+                #fileList = [data_dir + 'genFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_' + str(inv_step) + '_'
+                #            + str(conditioning_members) + '_' + str(N_ensemble) + '.npy' for ind in indices ]
+                fileList = [data_dir + 'genFsemble_'+List_dates_inv[ind[0]]+'_'+str((ind[1]+1)*3)+'_' + str(inv_step) + '.npy' for ind in indices ]            
             
             elif option=='fake' and data_option=='sample' :
                 
@@ -545,14 +548,14 @@ def eval_distance_metrics(data):
     """
     
     #print(data)
-    metrics_list, dataset, n_samples_0, n_samples_1, VI, VI_f, CI, index, subsample, parameters, N_runs, dh, debiasing, data_dir_real, data_dir_obs,List_dates_inv, sList_dates_inv_org, List_dates_unique,fl_obs= data
+    metrics_list, dataset, n_samples_0, n_samples_1, VI, VI_f, CI, index, subsample, parameters, N_runs, dh, debiasing, conditioning_members, data_dir_real, data_dir_obs,List_dates_inv, sList_dates_inv_org, List_dates_unique,fl_obs= data
     print('Subsample', subsample)
     ## loading and normalizing data
     
     print('loading constants')
     Means = np.load(data_dir_real + 'Mean_4_var.npy')[VI].reshape(1,len(VI),1,1)
     Maxs = np.load(data_dir_real + 'MaxNew_4_var.npy')[VI].reshape(1,len(VI),1,1)
-    
+
     if type(subsample)==tuple:
         real_sub, fake_sub = subsample
     else :
@@ -577,7 +580,7 @@ def eval_distance_metrics(data):
         #real_data = normalize(real_data, 0.95, Means, Maxs)
         print(real_data.shape, fake_data.shape)
         
-    elif list(dataset.keys())==['obs','fake','real']:
+    elif list(dataset.keys())==['obs','fake','real']: ######### HERE the magic happens
 
         print('index',index)
             
@@ -585,7 +588,7 @@ def eval_distance_metrics(data):
         fake_data = load_batch(dataset['fake'], n_samples_1, 
                                var_indices_fake = VI_f, option='fake',
                                subsample = fake_sub, fl_obs=fl_obs,
-               List_dates_unique=List_dates_unique, data_dir_obs=data_dir_obs)
+               List_dates_unique=List_dates_unique, data_dir_obs=data_dir_obs) # load_batch = load_dataset
         fake_data = fake_data.astype(np.float32)
         print('load real')
         real_ens = load_batch(dataset['real'], n_samples_0, 
@@ -662,12 +665,12 @@ def eval_distance_metrics(data):
             if metric == 'brier_score' or metric == 'rel_diagram' : 
                 Metric = getattr(metrics, metric)
         
-                results[metric] = Metric(real_data, fake_data, real_ens, parameters = parameters, debiasing = debiasing, select = False)
+                results[metric] = Metric(real_data, fake_data, real_ens, parameters = parameters, debiasing = debiasing, conditioning_members=conditioning_members, select = False)
                 
             else : 
                Metric = getattr(metrics, metric)
         
-               results[metric] = Metric(real_data, fake_data, real_ens, debiasing = debiasing, select = False) 
+               results[metric] = Metric(real_data, fake_data, real_ens, debiasing = debiasing, conditioning_members=conditioning_members, select = False) 
         else:
             Metric = getattr(metrics, metric)
             print(Metric)

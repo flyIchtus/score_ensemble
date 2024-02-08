@@ -174,7 +174,7 @@ skill_spread = metric2D_ens('Ensemble Brier Score',
 rel_diagram = metric2D_ens('Reliability diagram',
                              RD.rel_diag, vars_wo_orog, end_shape = (6, 2, 3, size, size))
 rank_histogram = metric2D_ens('Reliability diagram',
-                             RH.rank_histo, vars_wo_orog, end_shape = (3,121))
+                             RH.rank_histo, vars_wo_orog, end_shape = (3,250))
 bias_ensemble = metric2D_ens('Average bias', BE.bias_ens, vars_wo_orog)
 
 mse = metric2D_ens('Maximum absolute error', mse_bias.mse, vars_wo_orog)

@@ -9,7 +9,7 @@ import numpy as np
 import metrics4ensemble.wind_comp as wc
 import copy
 
-def skill_spread(cond, X,real_ens, debiasing = False):
+def skill_spread(cond, X,real_ens, debiasing = False, conditioning_members=None):
     """
     
     Inputs :
@@ -63,14 +63,18 @@ def skill_spread(cond, X,real_ens, debiasing = False):
     #    Bias = real_ens_p[i] - Gan_avg_mem
     #    Bias[1] = 0.
     #    X_p[i*N_a:(i+1)*N_a] = X_p[i*N_a:(i+1)*N_a] + Bias 
-    if debiasing == True : 
-        X_p = wc.debiasing(X_p, real_ens_p)
+
+    if debiasing != 'None' : 
+
+        X_p = wc.debiasing(X_p, real_ens_p, conditioning_members, mode=debiasing)
     # ############# DEBIASING ################
     angle_dif = wc.angle_diff(X_p[:,1], cond_p[1])
     X_p[:,1] = angle_dif
     cond_p[1,~np.isnan(cond_p[1])] = 0.
     
     skill = X_p.mean(axis=0) - cond_p
+    
+
     
     var = X_p.var(axis=0, ddof = 1)
     

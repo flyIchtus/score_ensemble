@@ -93,13 +93,15 @@ def getAndNameDirs(root_expe_path):
     parser.add_argument('--parameter_sets', type = str2tupleList, help = 'Set of numerical parameters (as tuples)', default = [])
     parser.add_argument('--instance_num', type = str2list, help = 'Instances of experiment to dig in', default = [])
     parser.add_argument('--variables', type = str2list, help = 'List of subset of variables to compute metrics on', default =[])
-    parser.add_argument('--subsample', type = int, help = 'number of members in ensemble', default = 16)
-    parser.add_argument('--debiasing', type = bool, help = 'debiasing or not', default = False)
+    parser.add_argument('--subsample', type = int, help = 'number of members in ensemble subsample', default = 16)
+    parser.add_argument('--N_ensemble', type = int, help = 'Total number of members in ensemble', default = 16)
+    parser.add_argument('--debiasing', type = str, help = 'debiasing mode. None (None), seed (SEED) or ensemble average (ENSAVG)', default = None)
     parser.add_argument('--num_proc', type = int, help = 'number of procs', default = 8)
     parser.add_argument('--data_dir_real', type = str, help = 'data_dir_real where database is', default = '')
     parser.add_argument('--data_dir_obs', type = str, help = 'data_dir_real where obs is', default = '')
-
-
+    parser.add_argument("--inv_step", type=int, default=1000, help='step of inversion to load w')
+    parser.add_argument("--conditioning_members", type=int, default=16, help='number of members used to generate ensembles')
+    
 
 
     multi_config=parser.parse_args()

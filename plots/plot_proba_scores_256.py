@@ -206,17 +206,28 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     cases_clean = ['AROME','CRPS_8_1', 'CRPS_8_2', 'CRPS_8_3', 'SP-SK_8_1', 'SP-SK_8_2', 'SP-SK_8_3', 'CRPS_14_1', 'CRPS_14_2', 'CRPS_14_3', 'SP-SK_14_1', 'SP-SK_14_2', 'SP-SK_14_3']
     cases_clean = ['AROME','R_SP-SK_14_1', 'R_SP-SK_14_2', 'PCA_FULL', 'PCA_CRPS_14_2']
 
+    #cases_clean = ['AROME','PCA_OPT_SPECTR', 'R_2_3', 'MIX_OPT', 'MIX_OPT_DEB']
+    cases_clean = ['AROME','OLD', 'NEW', 'MIX']
+    cases_clean = ['AROME','PCA', 'RANDOM', 'MIX']
+    cases_clean = ['AROME', 'INVERSION']
+    cases_clean = ['AROME', 'MIX']
+
+    #cases_clean = ['AROME', 'MIX_1.3']
+   
+
 
     echeance = ['+3H', '', '+9H', '', '+15H', '', '+21H', '', '+27H', '', '+33H', '', '+39H', '', '+45H', '', '+48H', '', '']
+    thresholds = [[5, 10, 15, 20, 30, 40], [0, 0, 0, 0, 0, 0,], [278.15, 283.15, 288.15, 293.15, 298.15, 303.15]]
+    
 
 
-    mean_bias = np.zeros((len_tests, N_e, n_c, size_x, size_x), dtype = ('float32'))
+    mean_bias = np.zeros((len_tests, N_e-2, n_c, size_x, size_x), dtype = ('float32'))
     mean_bias_LT = np.zeros((len_tests, n_D, n_LT, n_c, size_x, size_x), dtype = ('float32'))
 
     for i in range(len_tests):
         
-
-        mean_bias[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_bias_ensemble.npy')
+        
+        mean_bias[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_bias_ensemble_1000_16_112.npy')[0:N_e-2]
 
     D_i = 0
     LT_i = 0
@@ -268,15 +279,22 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     
 ################################################################# PLOT RANK HISTOGRAM
 
-    rank_histo = np.zeros((len_tests, N_e, n_c, N_bins_max))
+    rank_histo = np.zeros((len_tests, N_e-2, n_c, N_bins_max))
+    rank_histo_sum = np.zeros((len_tests, n_c))
+    
 
 
     for i in range(len_tests):
 
-        rank_histo[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_rank_histogram.npy')
+        rank_histo[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_rank_histogram_1000_16_112.npy')[0:N_e-2,:,0:N_bins_max]
+        rank_histo_sum[i] = np.sum(rank_histo[i], axis = (0,2)) 
+
+    
 
 
-    N_bins= [17,113,113, 113, 113]
+    N_bins= [17,113]
+    #N_bins= [17,17]
+
     
 
     for j in range(n_c):
@@ -284,7 +302,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
             fig,axs = plt.subplots(figsize = (9,7))
             ind = np.arange(N_bins[k])
             print(rank_histo[k,:,j,0:N_bins[k]].sum(axis=0).shape)
-            plt.bar(ind, rank_histo[k,:,j,0:N_bins[k]].sum(axis=0))
+            plt.bar(ind, rank_histo[k,:,j,0:N_bins[k]].sum(axis=0)/rank_histo_sum[k,j])
             plt.title(cases_clean[k] + ' ' + var_names[j],fontdict = font)
             #plt.xticks( fontsize ='18')
             plt.tick_params(bottom = False, labelbottom = False)
@@ -292,6 +310,7 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
             plt.ylabel('Number of Observations', fontsize= '18')
             axs.tick_params(length=12, width=1)
             plt.yticks(fontsize ='18')
+            #axs.set_ylim(0, 0.02)
 
             plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/rank_histo/rank_histo'+str(j)+'_'+str(k)+'.png')
 
@@ -315,10 +334,10 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
 #####################################################"PLOT REL DIAGRAM
     
 
-    rel_diag_scores = np.zeros((len_tests,N_e, 6, 2, n_c, size_x, size_x))
+    rel_diag_scores = np.zeros((len_tests,N_e-2, 6, 2, n_c, size_x, size_x))
     for i in range(len_tests):
         
-        rel_diag_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_rel_diagram.npy')
+        rel_diag_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_rel_diagram_1000_16_112.npy')[0:N_e-2]
 
 
 
@@ -358,12 +377,12 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
 
 
 #############################################"" PLOT CRPS####################################
-    crps_scores = np.zeros((len_tests, N_e, n_c), dtype = ('float32'))
+    crps_scores = np.zeros((len_tests, N_e-2, n_c), dtype = ('float32'))
     crps_scores_LT = np.zeros((len_tests, n_D, n_LT, n_c), dtype = ('float32'))
     
     for i in range(len_tests):
 
-        crps = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_ensemble_crps.npy')
+        crps = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_ensemble_crps_1000_16_112.npy')[0:N_e-2]
         print(crps.shape)
         crps_scores[i] = crps[:,:,0]
 
@@ -433,11 +452,11 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
     gc.collect()
 
 #################################################### SP
-    s_p_scores = np.zeros((len_tests, N_e, 2, n_c, size_x, size_x), dtype = ('float32'))
+    s_p_scores = np.zeros((len_tests, N_e-2, 2, n_c, size_x, size_x), dtype = ('float32'))
     s_p_scores_LT = np.zeros((len_tests, n_D, n_LT, 2, n_c, size_x, size_x), dtype = ('float32'))
 
     for i in range(len_tests):
-        s_p_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_skill_spread.npy')
+        s_p_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_skill_spread_1000_16_112.npy')[0:N_e-2]
 
     D_i = 0
     LT_i = 0
@@ -457,11 +476,12 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
             
             for k in range(len_tests):
                     
-                if k == 0 :    
-                    plt.plot(np.sqrt(np.nanmean(s_p_scores_LT[k,:,:,0,i]**2., axis =(0,2,3))), label = 'SKILL AROME', color= color_p[k], linewidth =3 )
+                #if k == 0 :    
+                    #plt.plot(np.sqrt(np.nanmean(s_p_scores_LT[k,:,:,0,i]**2., axis =(0,2,3))), label = 'SKILL AROME', color= color_p[k], linewidth =3 )
                 
-            
+                plt.plot(np.sqrt(np.nanmean(s_p_scores_LT[k,:,:,0,i]**2., axis =(0,2,3))), label = cases_clean[k], color= color_p[k], linestyle = line[k], linewidth = 2 )
                 plt.plot(np.nanmean(np.sqrt(np.nanmean(s_p_scores_LT[k,:,:,1,i], axis =(0))), axis=(-2,-1)), label = cases_clean[k], color= color_p[k], linestyle = line[k] )
+                #plt.plot(np.sqrt(np.nanmean(s_p_scores_LT[k,:,:,0,i]**2., axis =(0,2,3))), label = cases_clean[k], color= color_p[k], linestyle = line[k] )
 
 
                 plt.xticks( fontsize ='18')
@@ -486,12 +506,12 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
 
 ################################################"" BRIER
 
-    Brier_scores = np.zeros((len_tests, N_e, 6, n_c, size_x, size_x), dtype = ('float32'))
+    Brier_scores = np.zeros((len_tests, N_e-2, 6, n_c, size_x, size_x), dtype = ('float32'))
     Brier_scores_LT = np.zeros((len_tests, n_D, n_LT, 6, n_c, size_x, size_x), dtype = ('float32'))
     
     for i in range(len_tests):
 
-        Brier_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_brier_score.npy')
+        Brier_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_brier_score_1000_16_112.npy')[0:N_e-2]
         
     D_i = 0
     LT_i = 0
@@ -526,91 +546,115 @@ def plots_ens(tests_list, Path_to_q, n_q, N_e, n_c, size_x, n_LT, n_D):
             #         fontdict = font, transform=axs.transAxes)
             plt.legend(fontsize = 10, ncol=1, frameon = False, loc='lower right')
             plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/brier/brier'+str(i)+'_'+str(j)+'.pdf')
+
+        
+    for j in range(n_c):
+        fig,axs = plt.subplots(figsize = (9,7))
+        for k in range(len_tests):
+        
+            #plt.plot(1-np.nanmean(Brier_scores_LT[k,:,:,i, j], axis= (0,2,3))/np.nanmean(Brier_scores_LT[0,:,:,i, j], axis= (0,2,3)), label = cases_clean[k], color = color_p[k])
             
+            plt.plot(1.-(np.nanmean(Brier_scores_LT[k,:,:,:, j], axis= (0,1, 3,4)) / np.nanmean(Brier_scores_LT[0,:,:,:, j], axis= (0,1, 3,4) )), label = cases_clean[k], color = color_p[k], linestyle = line[k])
+            
+ 
+        #plt.ylim([-0.15, 0.15])
+        plt.xticks( fontsize ='18')
+        axs.set_xticks(range(len(thresholds[j])))
+        axs.set_xticklabels(thresholds[j])
+        axs.tick_params(direction='in', length=12, width=1)
+        plt.yticks(fontsize ='18')
+        plt.ylabel(var_names_m[j], fontsize= '18')
+
+        #plt.text(0.3, 0.9, case_name[j][i],
+        #         fontdict = font, transform=axs.transAxes)
+        plt.legend(fontsize = 10, ncol=1, frameon = False, loc='lower right')
+        plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/brier/brier'+str(i)+'_thresh'+str(j)+'.png')
+        
+
     Brier_scores=0
     Brier_scores_LT=0
     gc.collect()
 
 #####################################################"ROC
-    rel_diag_scores = np.zeros((len_tests,N_e, 6, 2, n_c, size_x, size_x))
-    for i in range(len_tests):
+    # rel_diag_scores = np.zeros((len_tests,N_e-2, 6, 2, n_c, size_x, size_x))
+    # for i in range(len_tests):
         
-        rel_diag_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_2235_rel_diagram.npy')
+    #     rel_diag_scores[i] = np.load(Path_to_q + tests_list[i] + '/log/distance_metrics_distance_metrics_300_rel_diagram_1000_16_112.npy')[0:N_e-2]
 
 
 
-    bins_roc = np.array([0.99, 0.93, 0.86, 0.79, 0.72, 0.65, 0.58, 0.51, 0.44, 0.37, 0.3, 0.23, 0.14, 0.07, 0.01])
-    for i in range(6):
+    # bins_roc = np.array([0.99, 0.93, 0.86, 0.79, 0.72, 0.65, 0.58, 0.51, 0.44, 0.37, 0.3, 0.23, 0.14, 0.07, 0.01])
+    # for i in range(6):
 
-        for j in range(n_c):
-            fig,axs = plt.subplots(figsize = (9,7))
-            for k in range(len_tests):
-                O_tr = rel_diag_scores[k,:-2,i,1,j]
-                X_prob = rel_diag_scores[k,:-2,i,0,j]
-                #print(O_tr.shape, X_prob.shape,)
+    #     for j in range(n_c):
+    #         fig,axs = plt.subplots(figsize = (9,7))
+    #         for k in range(len_tests):
+    #             O_tr = rel_diag_scores[k,:-2,i,1,j]
+    #             X_prob = rel_diag_scores[k,:-2,i,0,j]
+    #             #print(O_tr.shape, X_prob.shape,)
 
-                for z in range(bins_roc.shape[0]):
+    #             for z in range(bins_roc.shape[0]):
                     
-                    forecast_p = copy.deepcopy(X_prob[np.where((X_prob > bins_roc[z]), True, False)])
-                    obs = copy.deepcopy(O_tr[np.where((X_prob > bins_roc[z]), True, False)])
-                    obs_w_nan = copy.deepcopy(obs[~np.isnan(obs)])
-                    for_w_nan = copy.deepcopy(forecast_p[~np.isnan(obs)])
-                    for_w_nan[:] = 1
-                    TP = (for_w_nan == obs_w_nan).sum()
-                    FP = (for_w_nan != obs_w_nan).sum()
+    #                 forecast_p = copy.deepcopy(X_prob[np.where((X_prob > bins_roc[z]), True, False)])
+    #                 obs = copy.deepcopy(O_tr[np.where((X_prob > bins_roc[z]), True, False)])
+    #                 obs_w_nan = copy.deepcopy(obs[~np.isnan(obs)])
+    #                 for_w_nan = copy.deepcopy(forecast_p[~np.isnan(obs)])
+    #                 for_w_nan[:] = 1
+    #                 TP = (for_w_nan == obs_w_nan).sum()
+    #                 FP = (for_w_nan != obs_w_nan).sum()
                     
                     
-                    forecast_n = copy.deepcopy(X_prob[np.where((X_prob <= bins_roc[z]), True, False)])
-                    obs = copy.deepcopy(O_tr[np.where((X_prob <= bins_roc[z]), True, False)])
-                    obs_w_nan = copy.deepcopy(obs[~np.isnan(obs)])
-                    for_w_nan = copy.deepcopy(forecast_n[~np.isnan(obs)])
-                    for_w_nan[:] = 0
-                    TN = (for_w_nan == obs_w_nan).sum()
-                    FN = (for_w_nan != obs_w_nan).sum() 
+    #                 forecast_n = copy.deepcopy(X_prob[np.where((X_prob <= bins_roc[z]), True, False)])
+    #                 obs = copy.deepcopy(O_tr[np.where((X_prob <= bins_roc[z]), True, False)])
+    #                 obs_w_nan = copy.deepcopy(obs[~np.isnan(obs)])
+    #                 for_w_nan = copy.deepcopy(forecast_n[~np.isnan(obs)])
+    #                 for_w_nan[:] = 0
+    #                 TN = (for_w_nan == obs_w_nan).sum()
+    #                 FN = (for_w_nan != obs_w_nan).sum() 
                     
-                    Hit_rate[z+1]= (TP/(TP+FN))
-                    false_alarm[z+1] = (FP/(FP+TN))
+    #                 Hit_rate[z+1]= (TP/(TP+FN))
+    #                 false_alarm[z+1] = (FP/(FP+TN))
                     
-                #print(np.trapz(Hit_rate, false_alarm))
-                    #freq_obs[z] = obs.sum()/obs.shape[0]
+    #             #print(np.trapz(Hit_rate, false_alarm))
+    #                 #freq_obs[z] = obs.sum()/obs.shape[0]
                     
 
-                plt.plot(false_alarm, Hit_rate, label = cases_clean[k], color = color_p[k], linestyle = line[k])
+    #             plt.plot(false_alarm, Hit_rate, label = cases_clean[k], color = color_p[k], linestyle = line[k])
  
-                A_ROC[k] = np.trapz(Hit_rate, false_alarm)
+    #             A_ROC[k] = np.trapz(Hit_rate, false_alarm)
                     
-                A_ROC_skill[k]=1-A_ROC[0]/A_ROC[k]
+    #             A_ROC_skill[k]=1-A_ROC[0]/A_ROC[k]
                 
 
-            #plt.plot(bins[:-1]+0.05, bins[:-1]+0.05, label = 'perfect', color = 'black')
-                #plt.ylim([-0.15, 0.15])
-            plt.xticks( fontsize ='18')
-            plt.xlabel('False Alarm Rate', fontsize= '18')
-            plt.ylabel('Hit Rate', fontsize= '18')
-            axs.tick_params(direction='in', length=12, width=2)
-            plt.yticks(fontsize ='18')
-            plt.title(case_name[j][i],fontdict = font)
-            #plt.text(0.3, 0.9, case_name[j][i],
-            #         fontdict = font, transform=axs.transAxes)
-            plt.legend(fontsize = 14,frameon = False, ncol=1)
+    #         #plt.plot(bins[:-1]+0.05, bins[:-1]+0.05, label = 'perfect', color = 'black')
+    #             #plt.ylim([-0.15, 0.15])
+    #         plt.xticks( fontsize ='18')
+    #         plt.xlabel('False Alarm Rate', fontsize= '18')
+    #         plt.ylabel('Hit Rate', fontsize= '18')
+    #         axs.tick_params(direction='in', length=12, width=2)
+    #         plt.yticks(fontsize ='18')
+    #         plt.title(case_name[j][i],fontdict = font)
+    #         #plt.text(0.3, 0.9, case_name[j][i],
+    #         #         fontdict = font, transform=axs.transAxes)
+    #         plt.legend(fontsize = 14,frameon = False, ncol=1)
             
-            #axins = inset_axes(axs, width="60%", height="30%", loc=8)
+    #         #axins = inset_axes(axs, width="60%", height="30%", loc=8)
 
-            #axins.bar(tests_list[1::], A_ROC_skill[1::])
+    #         #axins.bar(tests_list[1::], A_ROC_skill[1::])
 
-            plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/ROC/ROC'+str(i)+'_'+str(j)+'.png')
+    #         plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/ROC/ROC'+str(i)+'_'+str(j)+'.png')
             
-            fig,axs = plt.subplots(figsize = (9,7))
+    #         fig,axs = plt.subplots(figsize = (9,7))
             
-            fig,axs = plt.subplots(figsize = (9,7))
-            plt.bar(cases_clean[1::], A_ROC_skill[1::])
-            plt.xticks( fontsize ='18')
-            plt.ylabel('Area under ROC skill', fontsize= '18')
-            axs.tick_params(direction='in', length=12, width=2)
-            plt.yticks(fontsize ='18')
-            plt.title(case_name[j][i],fontdict = font)
+    #         fig,axs = plt.subplots(figsize = (9,7))
+    #         plt.bar(cases_clean[1::], A_ROC_skill[1::])
+    #         plt.xticks( fontsize ='18')
+    #         plt.ylabel('Area under ROC skill', fontsize= '18')
+    #         axs.tick_params(direction='in', length=12, width=2)
+    #         plt.yticks(fontsize ='18')
+    #         plt.title(case_name[j][i],fontdict = font)
             
-            plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/ROC/AROC'+str(i)+'_'+str(j)+'.png')
+    #         plt.savefig('/home/mrmn/moldovang/score_ensemble/plots/ROC/AROC'+str(i)+'_'+str(j)+'.png')
 
 
 Path_to_q = '/scratch/mrmn/moldovang/tests_CGAN/'
@@ -702,7 +746,17 @@ tests_list = ["REAL_256", "random_['1', '0', '0', '0', '0', '0', '1', '0', '1', 
                "normal_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1']", "normal_['1', '1', '1', '1', '0', '0', '1', '1', '1', '0', '1', '1', '0', '1']" ]
               
 
+#tests_list = ["REAL_256", "normal_['1', '1', '0', '0', '1', '0', '0', '1', '0', '0', '0', '0', '0', '0']", "random_['0', '0', '1', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1']", "mix2_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0']", "mix2_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0']_False"  ]        
 
+tests_list = ["REAL_256", "normal_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1']", "normal_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1']_Metscore", "mix2_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0']_False"  ]        
+tests_list = ["REAL_256", "mix2_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0']_False"  ]
+tests_list = ["REAL_256", "random_['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '0', '0']"  ]        
 
+tests_list = ["REAL_256", "mix3_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1']_uvt", "mix3_['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']_uvt", "mix3_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0']_uvt",   ]
 
-plots_ens(tests_list, Path_to_q, 7, 2237, 3, 256, 15, 149)
+tests_list = ["REAL_256", "INV_256_SPREAD"]
+tests_list = ["REAL_256",  "mix3_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0']_fft",   ]
+
+#tests_list = ["REAL_256", "mix3_['1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0']_1.3"]
+
+plots_ens(tests_list, Path_to_q, 7, 302, 3, 256, 15, 20)

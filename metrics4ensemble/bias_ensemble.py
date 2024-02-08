@@ -10,7 +10,7 @@ import metrics4ensemble.wind_comp as wc
 import copy
 
 
-def bias_ens(cond, X,real_ens, debiasing = False):
+def bias_ens(cond, X,real_ens, debiasing = False, conditioning_members=None):
     """
     
     Inputs :
@@ -53,9 +53,10 @@ def bias_ens(cond, X,real_ens, debiasing = False):
     
     #print(Bias.shape, real_ens_p_mean.shape, real_ens_p.shape, X_p_mean.shape)
     #X_p = X_p + Bias
-    if debiasing == True : 
 
-        X_p = wc.debiasing(X_p, real_ens_p)
+    if debiasing != 'None' : 
+
+        X_p = wc.debiasing(X_p, real_ens_p, conditioning_members, mode=debiasing)
     #N_a=int(X_p.shape[0]/real_ens_p.shape[0])
     #for i in range(int(real_ens_p.shape[0])):
         

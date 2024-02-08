@@ -14,7 +14,7 @@ import numpy as np
 import metrics4ensemble.wind_comp as wc
 import copy
 import CRPS.CRPS as psc
-def ensemble_crps(cond, X, real_ens, debiasing = False):
+def ensemble_crps(cond, X, real_ens, debiasing = False, conditioning_members=None):
     """
     'average CRPS' for each member of the 'X' ensemble, compared to the distribution induced by condition
     
@@ -39,44 +39,20 @@ def ensemble_crps(cond, X, real_ens, debiasing = False):
     cond_p = copy.deepcopy(cond)
     real_ens_p = copy.deepcopy(real_ens)
     
-    ############# DEBIASING U v t2m
 
-    # N_a=int(X_p.shape[0]/real_ens_p.shape[0])
-    # for i in range(int(real_ens_p.shape[0])):
-        
-    #     Gan_avg_mem = np.mean(X_p[i*N_a:(i+1)*N_a], axis = 0)
-    #     Bias = real_ens_p[i] - Gan_avg_mem
-    #     #Bias[1] = 0.
-    #     X_p[i*N_a:(i+1)*N_a] = X_p[i*N_a:(i+1)*N_a] + Bias 
     
     ##################################################################
     X_p[:,0], X_p[:,1] = wc.computeWindDir(X_p[:,0], X_p[:,1])
     real_ens_p[:,0], real_ens_p[:,1] = wc.computeWindDir(real_ens_p[:,0], real_ens_p[:,1])
     
     
-       
-    ############# DEBIASING FF DD T2M ################
-    #X_p_mean = X_p.mean(axis=0)
-    #real_ens_p_mean = real_ens_p.mean(axis=0)
-    #Bias = real_ens_p_mean - X_p_mean
-    #Bias[1] = 0.
-    
-    #print(Bias.shape, real_ens_p_mean.shape, real_ens_p.shape, X_p_mean.shape)
-    #X_p = X_p + Bias
 
-    if debiasing == True :
-        print('I am debiasing')
- 
-        X_p = wc.debiasing(X_p, real_ens_p)
-    #N_a=int(X_p.shape[0]/real_ens_p.shape[0])
-    #for i in range(int(real_ens_p.shape[0])):
-    #    
-    #    Gan_avg_mem = np.mean(X_p[i*N_a:(i+1)*N_a], axis = 0)
-    #    Bias = real_ens_p[i] - Gan_avg_mem
-    #    Bias[1] = 0.
-    #    X_p[i*N_a:(i+1)*N_a] = X_p[i*N_a:(i+1)*N_a] + Bias 
-        
-    ############# DEBIASING ################
+
+
+    if debiasing != 'None' : 
+
+        X_p = wc.debiasing(X_p, real_ens_p, conditioning_members, mode=debiasing)
+
 
     
     angle_dif = wc.angle_diff(X_p[:,1], cond_p[1])
@@ -86,9 +62,6 @@ def ensemble_crps(cond, X, real_ens, debiasing = False):
     cond_p[1,~np.isnan(cond_p[1])] = 0.
 
 
-    # crps = ps.crps_ensemble(cond_p,X_p, axis = 0)
-    
-    ################################################## CRPS with another method ##################################
     print(cond_p.shape)
     cond_p_ff = cond_p[0,~np.isnan(cond_p[0])]
     cond_p_dd = cond_p[1,~np.isnan(cond_p[1])]
@@ -105,21 +78,21 @@ def ensemble_crps(cond, X, real_ens, debiasing = False):
     for i in range(len(cond_p_ff)):
         
         crps,fcrps,acrps = psc(X_p_ff[:,i],cond_p_ff[i]).compute()   
-        sm = sm + fcrps
+        sm = sm + crps
     crps_res[0] = sm / len(cond_p_ff) 
     sm = 0.
     
     for i in range(len(cond_p_dd)):
         
         crps,fcrps,acrps = psc(X_p_dd[:,i],cond_p_dd[i]).compute()   
-        sm = sm + fcrps
+        sm = sm + crps
     crps_res[1] = sm / len(cond_p_dd)
     sm = 0.
 
     for i in range(len(cond_p_t2m)):
         
         crps,fcrps,acrps = psc(X_p_t2m[:,i],cond_p_t2m[i]).compute()   
-        sm = sm + fcrps
+        sm = sm + crps
     crps_res[2] = sm / len(cond_p_t2m)    
 
     print(crps_res)
